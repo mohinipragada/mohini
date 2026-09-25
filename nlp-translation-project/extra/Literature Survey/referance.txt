@@ -1,0 +1,12 @@
+1 ]  M. E. Aminanto, R. Choi, H. C. Tanuwidjaja, P. D. Yoo, and K. Kim. Deep abstraction and weighted feature selection for Wi-Fi impersonation detection. IEEE Transactions on Information Forensics and Security, 13(3):621–636, March 2018.
+
+2] J. Booz, J. McGiff, W. G. Hatcher, W. Yu, and C. Lu. Tuning deep learning performance for android malware detection. In Technical Report, Towson University, 2018, Feb. 2018.
+
+3 ] M. Iliadis, L. Spinoulas, and A. K. Katsaggelos. Deep fully-connected networks for video compressive sensing. Digital Signal Processing, 72(Supplement C):9 – 18, 2018.
+
+4]  C. Angermueller, H. J. Lee, W. Reik, and O. Stegle. Deepcpg: accurate prediction of single-cell DNA methylation states using deep learning. Genome Biology, 18(1):67, Apr 2017
+
+5]  T. S. Borkar and L. J. Karam. Deepcorrect: Correcting DNN models against image distortions. CoRR, abs/1705.02406, 2017.
+
+6] L. L. Ge, Y. H. Wu, B. Hua, Z. M. Chen, and L. Chen. Image
+registration based on SOFM neural network clustering. In 2017 36th Chinese Control Conference (CCC), pages 6016–6020, July 2017.

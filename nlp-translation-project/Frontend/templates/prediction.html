@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Translation</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="static/assets/img/favicon.png" rel="icon">
+<!--  <link href="static/assets/img/apple-touch-icon.png" rel="apple-touch-icon">-->
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="static/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="static/assets/vendor/icofont/icofont.min.css" rel="stylesheet">
+  <link href="static/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="static/assets/vendor/animate.css/animate.min.css" rel="stylesheet">
+  <link href="static/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="static/assets/vendor/venobox/venobox.css" rel="stylesheet">
+  <link href="static/assets/vendor/owl.carousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="static/assets/css/style.css" rel="stylesheet">
+
+  <!-- =======================================================
+  * Template Name: Sailor - v2.3.1
+  * Template URL: https://bootstrapmade.com/sailor-free-bootstrap-theme/
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+</head>
+
+<body>
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="fixed-top ">
+    <div class="container d-flex align-items-center">
+
+      <!-- <h1 class="logo"><a href="/">E-LEARNING</a></h1> -->
+      <!-- Uncomment below if you prefer to use an image logo -->
+       <a href="index.html" class="logo"><img src="static/assets/img/logo.png" alt="" class="img-fluid"></a>
+
+      <nav class="nav-menu d-none d-lg-block">
+
+        <style>
+          ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #333;
+          }
+        
+          li {
+            display: inline-block;
+          }
+        
+          li a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+          }
+        
+          li a:hover {
+            background-color: #bccfce;
+          }
+        </style>
+        
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/prediction">Prediction</a></li>
+          <li><a href="/login">LogOut</a></li>
+          <!-- <li class="active"><a href="/load data">Load Data</a></li>
+          <li><a href="/view data">View Data</a></li>
+          <li><a href="/model">Select Model</a></li>
+          <li><a href="/graph">Graph</a></li> -->
+        </ul>
+        
+
+      </nav><!-- .nav-menu -->
+
+
+    </div>
+  </header><!-- End Header -->
+
+  <section id="hero">
+    <div id="heroCarousel" class="carousel slide carousel-fade" data-ride="carousel">
+      <!-- <h1 style="color:rgb(11, 177, 25);">{{msg}}</h1> -->
+
+      <ol class="carousel-indicators" id="hero-carousel-indicators"></ol>
+
+<!--      <div class="carousel-inner" role="listbox">-->
+                  <div class="carousel-item active" style="color:bright;background-image: url(static/assets/img/z1.png)">
+                    <!-- <h1 style="color:rgb(27, 173, 76);">{{msg}}</h1> -->
+
+          <div class="carousel-container">
+            <!-- <center><h4 style="color:white;">{{msg}}</h4></center> -->
+            <div class="container text-center my-5 py-5">
+              <center>
+                  <h3 style="bottom: 250px;color:rgb(103, 223, 223);padding-top: 100px;">{{msg}}</h3>
+                  {% if audio_url %}<audio controls autoplay src="{{ audio_url }}"></audio>{% endif %}
+                  </center>
+              <center>
+                  <!-- <h3 style="bottom: 222px;color:white;padding-top: 118px;">ON-SCREEN ACTIVITY TRACKING</h3> -->
+               </center>
+               <h3 style="color:white;">  </h3>
+  
+  
+               <h3 style="color:white;bottom: 100px;">With the help of Machine Learning </h3>
+               <p>
+  
+  
+  
+                <form action="/prediction" method="post" enctype="multipart/form-data">
+                  <center>
+                    <select name="f1" id="">
+                      <option value="">Select Language you want to speak</option>
+                      <option value="en">English</option> 
+                      <option value="hi">Hindi</option>
+                      <option value="te">Telugu</option>
+                      <option value="mr">Marathi</option>
+                      <option value="gu">Gujarati</option>
+                      <option value="kn">Kannada</option>
+                      <option value="pa">Punjabi</option>
+                      <option value="zh-cn">Chinese</option>
+                      <option value="es">Spanish </option>
+                      <option value="ar">Arabic</option>
+                      <option value="pt">Portuguese</option>
+                      <option value="ru">Russian</option>
+                      <option value="ja">Japanese</option>
+                      <option value="fr">French</option>
+                    </select>
+                    <select name="f2" id="">
+                      <option value="">Select Language you want to Convert</option>
+                      <option value="en">English</option>
+                      <option value="hi">Hindi</option>
+                      <option value="te">Telugu</option>
+                      <option value="mr">Marathi</option>
+                      <option value="gu">Gujarati</option>
+                      <option value="kn">Kannada</option>
+                      <option value="pa">Punjabi</option>
+                      <option value="zh-cn">Chinese</option>
+                      <option value="es">Spanish </option>
+                      <option value="ar">Arabic</option>
+                      <option value="pt">Portuguese</option>
+                      <option value="ru">Russian</option>
+                      <option value="ja">Japanese</option>
+                      <option value="fr">French</option></select>
+                    <!-- <input type="text" name="f1" placeholder="Select Language you want to speak"style="height: 75px;width: 300px; color:rgb(2, 18, 20); border-color:rgb(11, 203, 236);"> 
+                    <input type="text" name="f2" placeholder="Select Language you want to Conver"style="height: 75px;width: 300px; color:rgb(2, 18, 20); border-color:rgb(11, 203, 236);"><br> -->
+                      
+                  </center>
+                  </center>
+
+                  <input class="white_bt bt_main" type="submit" value="Submit"
+                     style="margin-left: 0px;margin-top: 30px;">
+               </form>
+          </div>
+      </div>
+          </div>
+<!--      </div>-->
+    </div>
+  </section>
+
+
+
+
+
+
+          <script src="static/assets/vendor/jquery/jquery.min.js"></script>
+          <script src="static/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+          <script src="static/assets/vendor/jquery.easing/jquery.easing.min.js"></script>
+          <script src="static/assets/vendor/php-email-form/validate.js"></script>
+          <script src="static/assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+          <script src="static/assets/vendor/venobox/venobox.min.js"></script>
+          <script src="static/assets/vendor/waypoints/jquery.waypoints.min.js"></script>
+          <script src="static/assets/vendor/owl.carousel/owl.carousel.min.js"></script>
+
+  <!-- Template Main JS File -->
+          <script src="static/assets/js/main.js"></script>
+
+</body>
+
+</html>
