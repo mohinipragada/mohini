@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Translator Source Code | Mohini Pragada</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="container nav-content">
+      <a href="../../index.html" class="logo">Mohini<span>.</span></a>
+      <a href="../../index.html#projects" class="btn btn-small btn-outline">&larr; Back to portfolio</a>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container">
+      <p class="section-label">Source Code</p>
+      <h2>NLP-Powered Language Translation System</h2>
+      <p class="section-intro">
+        Frontend (HTML templates) and backend (Python Flask + MySQL) code for my college project.
+      </p>
+      <a href="nlp-translator-code.zip" class="btn" download>Download all code (.zip)</a>
+
+      <div class="code-viewer">
+        <nav class="card file-list"><p class="file-group">Backend</p><ul><li><button class="file-btn active" data-target="file0">app.py</button></li><li><button class="file-btn" data-target="file1">database.sql</button></li><li><button class="file-btn" data-target="file2">requirements.txt</button></li></ul><p class="file-group">Frontend</p><ul><li><button class="file-btn" data-target="file3">index.html</button></li><li><button class="file-btn" data-target="file4">about.html</button></li><li><button class="file-btn" data-target="file5">login.html</button></li><li><button class="file-btn" data-target="file6">registration.html</button></li><li><button class="file-btn" data-target="file7">userhome.html</button></li><li><button class="file-btn" data-target="file8">prediction.html</button></li></ul><p class="file-group">Docs</p><ul><li><button class="file-btn" data-target="file9">README.md</button></li></ul></nav>
+        <div class="code-area"><section class="code-panel active" id="file0"><div class="code-head"><span>backend/app.py</span><span class="muted">181 lines</span></div><pre><code>import os
+import uuid
+
+import mysql.connector
+import speech_recognition as sr
+from flask import Flask, request, render_template, session, g, url_for
+from googletrans import Translator, LANGUAGES
+from gtts import gTTS
+from werkzeug.security import generate_password_hash, check_password_hash
+
+
+app = Flask(__name__)
+app.secret_key = os.environ.get(&quot;SECRET_KEY&quot;, &quot;fghhdfgdfgrthrttgdfsadfsaffgd&quot;)
+
+AUDIO_DIR = os.path.join(app.static_folder, &quot;audio&quot;)
+os.makedirs(AUDIO_DIR, exist_ok=True)
+
+
+def get_db():
+    # One connection per request, so it never goes stale or gets shared between threads
+    if &quot;db&quot; not in g:
+        g.db = mysql.connector.connect(
+            host=os.environ.get(&quot;DB_HOST&quot;, &quot;localhost&quot;),
+            user=os.environ.get(&quot;DB_USER&quot;, &quot;root&quot;),
+            password=os.environ.get(&quot;DB_PASSWORD&quot;, &quot;&quot;),
+            port=int(os.environ.get(&quot;DB_PORT&quot;, &quot;3306&quot;)),
+            database=os.environ.get(&quot;DB_NAME&quot;, &quot;announcement&quot;),
+        )
+    return g.db
+
+
+@app.teardown_appcontext
+def close_db(exc):
+    db = g.pop(&quot;db&quot;, None)
+    if db is not None:
+        db.close()
+
+
+def password_matches(stored, given):
+    # Accounts created before hashing was added still have plain-text passwords
+    if stored.startswith((&quot;scrypt:&quot;, &quot;pbkdf2:&quot;)):
+        return check_password_hash(stored, given)
+    return stored == given
+
+
+@app.route(&#x27;/&#x27;)
+def index():
+    return render_template(&quot;index.html&quot;)
+
+
+@app.route(&#x27;/about&#x27;)
+def about():
+    return render_template(&quot;about.html&quot;)
+
+
+@app.route(&#x27;/login&#x27;, methods=[&#x27;POST&#x27;, &#x27;GET&#x27;])
+def login():
+    if request.method == &#x27;POST&#x27;:
+        useremail = request.form[&#x27;useremail&#x27;]
+        userpassword = request.form[&#x27;userpassword&#x27;]
+
+        db = get_db()
+        cur = db.cursor()
+        cur.execute(&quot;SELECT Name, Mob, Password FROM user WHERE Email=%s&quot;, (useremail,))
+        row = cur.fetchone()
+
+        if row is None or not password_matches(row[2], userpassword):
+            msg = &quot;user Credentials Are not valid&quot;
+            return render_template(&quot;login.html&quot;, name=msg)
+
+        name, pno, stored = str(row[0]), str(row[1]), row[2]
+
+        # Upgrade a plain-text password to a hash on successful login
+        if stored == userpassword:
+            cur.execute(&quot;UPDATE user SET Password=%s WHERE Email=%s&quot;,
+                        (generate_password_hash(userpassword), useremail))
+            db.commit()
+
+        session[&#x27;useremail&#x27;] = useremail
+        session[&#x27;email&#x27;] = useremail
+        session[&#x27;pno&#x27;] = pno
+        session[&#x27;name&#x27;] = name
+        return render_template(&quot;userhome.html&quot;, myname=name)
+    return render_template(&#x27;login.html&#x27;)
+
+
+@app.route(&#x27;/registration&#x27;, methods=[&quot;POST&quot;, &quot;GET&quot;])
+def registration():
+    if request.method == &#x27;POST&#x27;:
+        username = request.form[&#x27;username&#x27;]
+        useremail = request.form[&#x27;useremail&#x27;]
+        userpassword = request.form[&#x27;userpassword&#x27;]
+        conpassword = request.form[&#x27;conpassword&#x27;]
+        Age = request.form[&#x27;Age&#x27;]
+        contact = request.form[&#x27;contact&#x27;]
+
+        if userpassword != conpassword:
+            msg = &quot;Password doesn&#x27;t match&quot;, &quot;warning&quot;
+            return render_template(&quot;registration.html&quot;, msg=msg)
+
+        db = get_db()
+        cur = db.cursor()
+        cur.execute(&quot;SELECT 1 FROM user WHERE Email=%s&quot;, (useremail,))
+        if cur.fetchone() is not None:
+            msg = &quot;Email is already registered&quot;, &quot;warning&quot;
+            return render_template(&quot;registration.html&quot;, msg=msg)
+
+        cur.execute(
+            &quot;INSERT INTO user(Name, Email, Password, Age, Mob) VALUES (%s, %s, %s, %s, %s)&quot;,
+            (username, useremail, generate_password_hash(userpassword), Age, contact),
+        )
+        db.commit()
+        msg = &quot;Registered successfully&quot;, &quot;success&quot;
+        return render_template(&quot;login.html&quot;, msg=msg)
+    return render_template(&#x27;registration.html&#x27;)
+
+
+def speech_to_translated_speech(source_language, target_language):
+    &quot;&quot;&quot;Record from this machine&#x27;s microphone, translate, and save an MP3.
+
+    Returns (audio_filename, error_message); exactly one of them is None.
+    Note: sr.Microphone() uses the mic of the machine running Flask, so this
+    only makes sense while running the app locally.
+    &quot;&quot;&quot;
+    if target_language not in LANGUAGES:
+        return None, &quot;Unsupported target language.&quot;
+    src = source_language if source_language in LANGUAGES else &quot;auto&quot;
+
+    recognizer = sr.Recognizer()
+    with sr.Microphone() as source:
+        recognizer.adjust_for_ambient_noise(source, duration=0.5)
+        print(&quot;Please speak now...&quot;)
+        try:
+            audio_data = recognizer.listen(source, timeout=10, phrase_time_limit=30)
+        except sr.WaitTimeoutError:
+            return None, &quot;No speech detected.&quot;
+
+    try:
+        if src == &quot;auto&quot;:
+            text = recognizer.recognize_google(audio_data)
+        else:
+            text = recognizer.recognize_google(audio_data, language=src)
+    except sr.UnknownValueError:
+        return None, &quot;Could not understand the audio.&quot;
+    except sr.RequestError as e:
+        return None, f&quot;Speech recognition service error: {e}&quot;
+    print(f&quot;Recognized text: {text}&quot;)
+
+    try:
+        translated_text = Translator().translate(text, src=src, dest=target_language).text
+        print(f&quot;Translated text ({LANGUAGES[target_language]}): {translated_text}&quot;)
+
+        # Unique name so simultaneous requests don&#x27;t overwrite each other
+        audio_file = f&quot;{uuid.uuid4().hex}.mp3&quot;
+        gTTS(translated_text, lang=target_language).save(os.path.join(AUDIO_DIR, audio_file))
+    except Exception as e:
+        return None, f&quot;Translation failed: {e}&quot;
+
+    return audio_file, None
+
+
+@app.route(&#x27;/prediction&#x27;, methods=[&quot;POST&quot;, &quot;GET&quot;])
+def prediction():
+    if request.method == &quot;POST&quot;:
+        f1 = request.form[&#x27;f1&#x27;]
+        f2 = request.form[&#x27;f2&#x27;]
+
+        audio_file, error = speech_to_translated_speech(f1, f2)
+        if error:
+            return render_template(&quot;prediction.html&quot;, msg=error)
+
+        audio_url = url_for(&#x27;static&#x27;, filename=f&quot;audio/{audio_file}&quot;)
+        return render_template(&quot;prediction.html&quot;, msg=&#x27;Audio Successfully Translated&#x27;,
+                               audio_url=audio_url)
+
+    return render_template(&quot;prediction.html&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    app.run(debug=os.environ.get(&quot;FLASK_DEBUG&quot;) == &quot;1&quot;)
+</code></pre></section><section class="code-panel" id="file1"><div class="code-head"><span>backend/database.sql</span><span class="muted">38 lines</span></div><pre><code>/*
+SQLyog Enterprise - MySQL GUI v6.56
+MySQL - 5.5.5-10.1.13-MariaDB : Database - announcement
+*********************************************************************
+*/
+
+
+/*!40101 SET NAMES utf8 */;
+
+/*!40101 SET SQL_MODE=&#x27;&#x27;*/;
+
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE=&#x27;NO_AUTO_VALUE_ON_ZERO&#x27; */;
+
+CREATE DATABASE /*!32312 IF NOT EXISTS*/`announcement` /*!40100 DEFAULT CHARACTER SET latin1 */;
+
+USE `announcement`;
+
+/*Table structure for table `user` */
+
+DROP TABLE IF EXISTS `user`;
+
+CREATE TABLE `user` (
+  `Id` int(200) NOT NULL AUTO_INCREMENT,
+  `Name` varchar(200) DEFAULT NULL,
+  `Email` varchar(200) DEFAULT NULL,
+  `Password` varchar(200) DEFAULT NULL,
+  `Age` varchar(200) DEFAULT NULL,
+  `Mob` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`Id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+
+/*Data for the table `user` */
+
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+</code></pre></section><section class="code-panel" id="file2"><div class="code-head"><span>backend/requirements.txt</span><span class="muted">7 lines</span></div><pre><code>Flask
+mysql-connector-python
+SpeechRecognition
+PyAudio
+googletrans==4.0.0rc1
+gTTS
+</code></pre></section><section class="code-panel" id="file3"><div class="code-head"><span>frontend/templates/index.html</span><span class="muted">122 lines</span></div><pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+
+&lt;head&gt;
+  &lt;meta charset=&quot;utf-8&quot;&gt;
+  &lt;meta content=&quot;width=device-width, initial-scale=1.0&quot; name=&quot;viewport&quot;&gt;
+
+  &lt;title&gt;Translation&lt;/title&gt;
+  &lt;meta content=&quot;&quot; name=&quot;description&quot;&gt;
+  &lt;meta content=&quot;&quot; name=&quot;keywords&quot;&gt;
+
+  &lt;!-- Favicons --&gt;
+  &lt;link href=&quot;/static/assets/img/favicon.png&quot; rel=&quot;icon&quot;&gt;
+  &lt;link href=&quot;/static/assets/img/apple-touch-icon.png&quot; rel=&quot;apple-touch-icon&quot;&gt;
+
+  &lt;!-- Google Fonts --&gt;
+  &lt;link
+    href=&quot;https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i&quot;
+    rel=&quot;stylesheet&quot;&gt;
+
+  &lt;!-- Vendor CSS Files --&gt;
+  &lt;link href=&quot;/static/assets/vendor/bootstrap/css/bootstrap.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;/static/assets/vendor/icofont/icofont.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;/static/assets/vendor/boxicons/css/boxicons.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;/static/assets/vendor/animate.css/animate.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;/static/assets/vendor/remixicon/remixicon.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;/static/assets/vendor/venobox/venobox.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;/static/assets/vendor/owl.carousel/assets/owl.carousel.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+
+  &lt;!-- Template Main CSS File --&gt;
+  &lt;link href=&quot;/static/assets/css/style.css&quot; rel=&quot;stylesheet&quot;&gt;
+
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+  &lt;!-- ======= Header ======= --&gt;
+  &lt;header style=&quot;color: white;&quot; id=&quot;header&quot; class=&quot;fixed-top &quot;&gt;
+    &lt;div class=&quot;container d-flex align-items-center&quot;&gt;
+
+      &lt;!-- &lt;h1 class=&quot;logo&quot;&gt;&lt;a href=&quot;/&quot;&gt;ON-SCREEN ACTIVITY TRACKING &lt;/a&gt;&lt;/h1&gt; --&gt;
+      &lt;!-- Uncomment below if you prefer to use an image logo --&gt;
+      &lt;!-- &lt;a href=&quot;index.html&quot; class=&quot;logo&quot;&gt;&lt;img src=&quot;/static/assets/images/logo.png&quot; alt=&quot;&quot; class=&quot;img-fluid&quot;&gt;&lt;/a&gt; --&gt;
+
+      &lt;nav class=&quot;nav-menu d-none d-lg-block&quot;&gt;
+
+        &lt;div style=&quot;display: flex; list-style: none; margin-left: 450px; font-size: 30px;&quot;&gt;
+          &lt;a href=&quot;/&quot; style=&quot;margin-right: 20px; text-decoration: none; color: rgb(62, 224, 189);&quot;&gt;Home&lt;/a&gt;
+          &lt;a href=&quot;/about&quot; style=&quot;margin-right: 20px; text-decoration: none; color: rgb(62, 224, 189);&quot;&gt;About&lt;/a&gt;
+          &lt;a href=&quot;/login&quot; style=&quot;margin-right: 20px; text-decoration: none; color: rgb(62, 224, 189);&quot;&gt;Login&lt;/a&gt;
+          &lt;a href=&quot;/registration&quot; style=&quot;text-decoration: none; color: rgb(62, 224, 189);&quot;&gt;Register&lt;/a&gt;
+        &lt;/div&gt;
+        
+
+      &lt;/nav&gt;&lt;!-- .nav-menu --&gt;
+
+      &lt;!--      &lt;a href=&quot;index.html&quot; class=&quot;get-started-btn ml-auto&quot;&gt;Get Started&lt;/a&gt;--&gt;
+
+    &lt;/div&gt;
+  &lt;/header&gt;&lt;!-- End Header --&gt;
+
+  &lt;div class=&quot;overlay&quot;&gt;
+    &lt;div class=&quot;gtco-container&quot;&gt;
+      &lt;div class=&quot;row&quot;&gt;
+        &lt;div class=&quot;col-md-12 col-md-offset-0 text-center&quot;&gt;
+          &lt;div class=&quot;display-t&quot;&gt;
+            &lt;div class=&quot;display-tc animate-box&quot; data-animate-effect=&quot;fadeIn&quot;&gt;
+              &lt;center&gt;
+                &lt;h3 style=&quot;bottom: 151px;color:rgb(11, 203, 236);top: -222;&quot;&gt;{{msg}}&lt;/h3&gt;
+              &lt;/center&gt;
+              &lt;!-- &lt;h3 style=&quot;color:rgb(11, 203, 236);bottom: 115px;&quot;&gt; Welcome To the website&lt;/h3&gt; --&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;!-- ======= Hero Section ======= --&gt;
+  &lt;section id=&quot;hero&quot;&gt;
+    &lt;div id=&quot;heroCarousel&quot; class=&quot;carousel slide carousel-fade&quot; data-ride=&quot;carousel&quot;&gt;
+
+      &lt;ol class=&quot;carousel-indicators&quot; id=&quot;hero-carousel-indicators&quot;&gt;&lt;/ol&gt;
+
+
+
+      &lt;!--      &lt;div class=&quot;carousel-inner&quot; role=&quot;listbox&quot;&gt;--&gt;
+
+      &lt;!-- Slide 1 --&gt;
+      &lt;!-- &lt;div class=&quot;carousel-item active img-fluid&quot; style=&quot;background-image: url(/static/assets/images/l1.jpg); background-size:cover;&quot;&gt; --&gt;
+
+        &lt;div class=&quot;container&quot;&gt;
+          &lt;h2 class=&quot;animate__animated animate__fadeInDown&quot;style=&quot;margin-top: 260px;color:rgb(11, 203, 236);&quot;&gt;Natural Language Translation Engine For &lt;br&gt;&lt;span&gt;  Announcements And Information Dissemination At Stations &lt;/h2&gt;
+          &lt;!-- &lt;p class=&quot;animate__animated animate__fadeInUp&quot;&gt;Ut velit est quam dolor ad a aliquid qui aliquid. Sequi ea ut
+            et est quaerat sequi nihil ut aliquam. Occaecati alias dolorem mollitia ut. Similique ea voluptatem. Esse
+            doloremque accusamus repellendus deleniti vel. Minus et tempore modi architecto.&lt;/p&gt; --&gt;
+          &lt;!-- &lt;a href=&quot;#about&quot; class=&quot;btn-get-started animate__animated animate__fadeInUp scrollto&quot;&gt;Read More&lt;/a&gt; --&gt;
+        &lt;/div&gt;
+
+      &lt;/div&gt;
+
+
+
+
+      &lt;script src=&quot;static/assets/vendor/jquery/jquery.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/bootstrap/js/bootstrap.bundle.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/jquery.easing/jquery.easing.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/php-email-form/validate.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/isotope-layout/isotope.pkgd.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/venobox/venobox.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/waypoints/jquery.waypoints.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/owl.carousel/owl.carousel.min.js&quot;&gt;&lt;/script&gt;
+
+      &lt;!-- Template Main JS File --&gt;
+      &lt;script src=&quot;static/assets/js/main.js&quot;&gt;&lt;/script&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+&lt;/body&gt;
+
+&lt;/body&gt;
+
+&lt;/html&gt;</code></pre></section><section class="code-panel" id="file4"><div class="code-head"><span>frontend/templates/about.html</span><span class="muted">125 lines</span></div><pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+
+&lt;head&gt;
+  &lt;meta charset=&quot;utf-8&quot;&gt;
+  &lt;meta content=&quot;width=device-width, initial-scale=1.0&quot; name=&quot;viewport&quot;&gt;
+
+  &lt;title&gt;Translation&lt;/title&gt;
+  &lt;meta content=&quot;&quot; name=&quot;description&quot;&gt;
+  &lt;meta content=&quot;&quot; name=&quot;keywords&quot;&gt;
+
+  &lt;!-- Favicons --&gt;
+  &lt;link href=&quot;/static/assets/img/favicon.png&quot; rel=&quot;icon&quot;&gt;
+  &lt;link href=&quot;/static/assets/img/apple-touch-icon.png&quot; rel=&quot;apple-touch-icon&quot;&gt;
+
+  &lt;!-- Google Fonts --&gt;
+  &lt;link
+    href=&quot;https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i&quot;
+    rel=&quot;stylesheet&quot;&gt;
+
+  &lt;!-- Vendor CSS Files --&gt;
+  &lt;link href=&quot;/static/assets/vendor/bootstrap/css/bootstrap.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;/static/assets/vendor/icofont/icofont.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;/static/assets/vendor/boxicons/css/boxicons.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;/static/assets/vendor/animate.css/animate.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;/static/assets/vendor/remixicon/remixicon.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;/static/assets/vendor/venobox/venobox.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;/static/assets/vendor/owl.carousel/assets/owl.carousel.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+
+  &lt;!-- Template Main CSS File --&gt;
+  &lt;link href=&quot;/static/assets/css/style.css&quot; rel=&quot;stylesheet&quot;&gt;
+
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+  &lt;!-- ======= Header ======= --&gt;
+  &lt;header style=&quot;color: white;&quot; id=&quot;header&quot; class=&quot;fixed-top &quot;&gt;
+    &lt;div class=&quot;container d-flex align-items-center&quot;&gt;
+
+      &lt;!-- &lt;h1 class=&quot;logo&quot;&gt;&lt;a href=&quot;/&quot;&gt;ON-SCREEN ACTIVITY TRACKING &lt;/a&gt;&lt;/h1&gt; --&gt;
+      &lt;!-- Uncomment below if you prefer to use an image logo --&gt;
+      &lt;!-- &lt;a href=&quot;index.html&quot; class=&quot;logo&quot;&gt;&lt;img src=&quot;/static/assets/images/logo.png&quot; alt=&quot;&quot; class=&quot;img-fluid&quot;&gt;&lt;/a&gt; --&gt;
+
+      &lt;nav class=&quot;nav-menu d-none d-lg-block&quot;&gt;
+
+        &lt;div style=&quot;display: flex; list-style: none; margin-left: 450px; font-size: 30px;&quot;&gt;
+          &lt;a href=&quot;/&quot; style=&quot;margin-right: 20px; text-decoration: none; color: rgb(62, 224, 189);&quot;&gt;Home&lt;/a&gt;
+          &lt;a href=&quot;/about&quot; style=&quot;margin-right: 20px; text-decoration: none; color: rgb(62, 224, 189);&quot;&gt;About&lt;/a&gt;
+          &lt;a href=&quot;/login&quot; style=&quot;margin-right: 20px; text-decoration: none; color: rgb(62, 224, 189);&quot;&gt;Login&lt;/a&gt;
+          &lt;a href=&quot;/registration&quot; style=&quot;text-decoration: none; color: rgb(62, 224, 189);&quot;&gt;Register&lt;/a&gt;
+        &lt;/div&gt;
+        
+
+      &lt;/nav&gt;&lt;!-- .nav-menu --&gt;
+
+      &lt;!--      &lt;a href=&quot;index.html&quot; class=&quot;get-started-btn ml-auto&quot;&gt;Get Started&lt;/a&gt;--&gt;
+
+    &lt;/div&gt;
+  &lt;/header&gt;&lt;!-- End Header --&gt;
+
+  &lt;div class=&quot;overlay&quot;&gt;
+    &lt;div class=&quot;gtco-container&quot;&gt;
+      &lt;div class=&quot;row&quot;&gt;
+        &lt;div class=&quot;col-md-12 col-md-offset-0 text-center&quot;&gt;
+          &lt;div class=&quot;display-t&quot;&gt;
+            &lt;div class=&quot;display-tc animate-box&quot; data-animate-effect=&quot;fadeIn&quot;&gt;
+              &lt;center&gt;
+                &lt;h3 style=&quot;bottom: 151px;color:rgb(11, 203, 236);top: -222;&quot;&gt;{{msg}}&lt;/h3&gt;
+              &lt;/center&gt;
+              &lt;!-- &lt;h3 style=&quot;color:rgb(11, 203, 236);bottom: 115px;&quot;&gt; Welcome To the website&lt;/h3&gt; --&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;!-- ======= Hero Section ======= --&gt;
+  &lt;section id=&quot;hero&quot;&gt;
+    &lt;div id=&quot;heroCarousel&quot; class=&quot;carousel slide carousel-fade&quot; data-ride=&quot;carousel&quot;&gt;
+
+      &lt;ol class=&quot;carousel-indicators&quot; id=&quot;hero-carousel-indicators&quot;&gt;&lt;/ol&gt;
+
+
+
+      &lt;!--      &lt;div class=&quot;carousel-inner&quot; role=&quot;listbox&quot;&gt;--&gt;
+
+      &lt;!-- Slide 1 --&gt;
+      &lt;!-- &lt;div class=&quot;carousel-item active img-fluid&quot; style=&quot;background-image: url(/static/assets/images/l1.jpg); background-size:cover;&quot;&gt; --&gt;
+
+        &lt;div class=&quot;container&quot;&gt;
+          &lt;h2 class=&quot;animate__animated animate__fadeInDown&quot;style=&quot;margin-top: 100px;color:rgb(11, 203, 236);&quot;&gt;Natural Language Translation Engine For &lt;br&gt;&lt;span&gt;  Announcements And Information Dissemination At Stations &lt;/h2&gt;
+            &lt;h2 class=&quot;animate__animated animate__fadeInDown&quot;style=&quot;margin-top: 20px;color:rgb(11, 203, 236);&quot;&gt;This engine harnesses cutting-edge natural language processing (NLP) techniques to provide accurate and context-aware translations of announcements and information at stations. It&#x27;s designed to bridge language barriers, ensuring that travelers from diverse linguistic backgrounds can access vital information seamlessly, enhancing their travel experience and safety. &lt;/h2&gt;
+              &lt;h2 class=&quot;animate__animated animate__fadeInDown&quot;style=&quot;margin-top: 20px;color:rgb(11, 203, 236);&quot;&gt;The system is capable of real-time translation and dissemination of announcements, including emergency alerts, schedule changes, and general station information. This ensures that all passengers, regardless of their native language, receive timely and relevant information, contributing to efficient station operations and passenger convenience. &lt;/h2&gt;
+                &lt;h2 class=&quot;animate__animated animate__fadeInDown&quot;style=&quot;margin-top: 20px;color:rgb(11, 203, 236);&quot;&gt;With a focus on inclusivity, the engine supports multiple languages, catering to a global audience. It&#x27;s integrated into various station communication channels, such as public address systems, digital signage, and mobile applications, making station information accessible to everyone, including those with hearing or visual impairments. &lt;/h2&gt;
+          &lt;!-- &lt;p class=&quot;animate__animated animate__fadeInUp&quot;&gt;Ut velit est quam dolor ad a aliquid qui aliquid. Sequi ea ut
+            et est quaerat sequi nihil ut aliquam. Occaecati alias dolorem mollitia ut. Similique ea voluptatem. Esse
+            doloremque accusamus repellendus deleniti vel. Minus et tempore modi architecto.&lt;/p&gt; --&gt;
+          &lt;!-- &lt;a href=&quot;#about&quot; class=&quot;btn-get-started animate__animated animate__fadeInUp scrollto&quot;&gt;Read More&lt;/a&gt; --&gt;
+        &lt;/div&gt;
+
+      &lt;/div&gt;
+
+
+
+
+      &lt;script src=&quot;static/assets/vendor/jquery/jquery.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/bootstrap/js/bootstrap.bundle.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/jquery.easing/jquery.easing.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/php-email-form/validate.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/isotope-layout/isotope.pkgd.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/venobox/venobox.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/waypoints/jquery.waypoints.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/owl.carousel/owl.carousel.min.js&quot;&gt;&lt;/script&gt;
+
+      &lt;!-- Template Main JS File --&gt;
+      &lt;script src=&quot;static/assets/js/main.js&quot;&gt;&lt;/script&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+&lt;/body&gt;
+
+&lt;/body&gt;
+
+&lt;/html&gt;</code></pre></section><section class="code-panel" id="file5"><div class="code-head"><span>frontend/templates/login.html</span><span class="muted">163 lines</span></div><pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+
+&lt;head&gt;
+  &lt;meta charset=&quot;utf-8&quot;&gt;
+  &lt;meta content=&quot;width=device-width, initial-scale=1.0&quot; name=&quot;viewport&quot;&gt;
+
+  &lt;title&gt;Translation&lt;/title&gt;
+  &lt;meta content=&quot;&quot; name=&quot;description&quot;&gt;
+  &lt;meta content=&quot;&quot; name=&quot;keywords&quot;&gt;
+
+  &lt;!-- Favicons --&gt;
+  &lt;link href=&quot;static/assets/img/favicon.png&quot; rel=&quot;icon&quot;&gt;
+  &lt;link href=&quot;static/assets/img/apple-touch-icon.png&quot; rel=&quot;apple-touch-icon&quot;&gt;
+
+  &lt;!-- Google Fonts --&gt;
+  &lt;link
+    href=&quot;https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i&quot;
+    rel=&quot;stylesheet&quot;&gt;
+
+  &lt;!-- Vendor CSS Files --&gt;
+  &lt;link href=&quot;static/assets/vendor/bootstrap/css/bootstrap.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;static/assets/vendor/icofont/icofont.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;static/assets/vendor/boxicons/css/boxicons.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;static/assets/vendor/animate.css/animate.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;static/assets/vendor/remixicon/remixicon.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;static/assets/vendor/venobox/venobox.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;static/assets/vendor/owl.carousel/assets/owl.carousel.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+
+  &lt;!-- Template Main CSS File --&gt;
+  &lt;link href=&quot;static/assets/css/style.css&quot; rel=&quot;stylesheet&quot;&gt;
+
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+  &lt;!-- ======= Header ======= --&gt;
+  &lt;header style=&quot;color: white;&quot; id=&quot;header&quot; class=&quot;fixed-top &quot;&gt;
+    &lt;div class=&quot;container d-flex align-items-center&quot;&gt;
+
+      &lt;!-- &lt;h1 class=&quot;logo&quot;&gt;&lt;a href=&quot;/&quot;&gt;ON-SCREEN ACTIVITY TRACKING &lt;/a&gt;&lt;/h1&gt; --&gt;
+      &lt;!-- Uncomment below if you prefer to use an image logo --&gt;
+      &lt;a href=&quot;index.html&quot; class=&quot;logo&quot;&gt;&lt;img src=&quot;static/assets/img/logo.png&quot; alt=&quot;&quot; class=&quot;img-fluid&quot;&gt;&lt;/a&gt;
+
+      &lt;nav class=&quot;nav-menu d-none d-lg-block&quot;&gt;
+
+        &lt;ul&gt;
+          &lt;div style=&quot;display: flex; list-style: none; margin-left: 450px; font-size: 30px;&quot;&gt;
+            &lt;a href=&quot;/&quot; style=&quot;margin-right: 20px; text-decoration: none; color: rgb(62, 224, 189);&quot;&gt;Home&lt;/a&gt;
+            &lt;a href=&quot;/about&quot; style=&quot;margin-right: 20px; text-decoration: none; color: rgb(62, 224, 189);&quot;&gt;About&lt;/a&gt;
+            &lt;a href=&quot;/login&quot; style=&quot;margin-right: 20px; text-decoration: none; color: rgb(62, 224, 189);&quot;&gt;Login&lt;/a&gt;
+            &lt;a href=&quot;/registration&quot; style=&quot;text-decoration: none; color: rgb(62, 224, 189);&quot;&gt;Register&lt;/a&gt;
+          &lt;/div&gt;
+
+
+          &lt;!-- &lt;li&gt;&lt;a href=&quot;/load data&quot;&gt;Load Data&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;/view data&quot;&gt;View Data&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;/model&quot;&gt;Select Model&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;/prediction&quot;&gt;Prediction&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;/graph&quot;&gt;Graph&lt;/a&gt;&lt;/li&gt; --&gt;
+
+        &lt;/ul&gt;
+
+      &lt;/nav&gt;&lt;!-- .nav-menu --&gt;
+
+      &lt;!--      &lt;a href=&quot;index.html&quot; class=&quot;get-started-btn ml-auto&quot;&gt;Get Started&lt;/a&gt;--&gt;
+
+    &lt;/div&gt;
+  &lt;/header&gt;&lt;!-- End Header --&gt;
+
+  &lt;div class=&quot;overlay&quot;&gt;
+    &lt;div class=&quot;gtco-container&quot;&gt;
+      &lt;div class=&quot;row&quot;&gt;
+        &lt;div class=&quot;col-md-12 col-md-offset-0 text-center&quot;&gt;
+          &lt;div class=&quot;display-t&quot;&gt;
+            &lt;div class=&quot;display-tc animate-box&quot; data-animate-effect=&quot;fadeIn&quot;&gt;
+              &lt;center&gt;
+                
+
+                &lt;!-- &lt;h3 style=&quot;bottom: 151px;color:rgb(11, 203, 236);top: -222;&quot;&gt;{{msg}}&lt;/h3&gt; --&gt;
+              &lt;/center&gt;
+              &lt;!-- &lt;h3 style=&quot;color:rgb(11, 203, 236);bottom: 115px;&quot;&gt; Welcome To the website&lt;/h3&gt; --&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;!-- ======= Hero Section ======= --&gt;
+  &lt;section id=&quot;hero&quot;&gt;
+    &lt;div id=&quot;heroCarousel&quot; class=&quot;carousel slide carousel-fade&quot; data-ride=&quot;carousel&quot;&gt;
+
+      &lt;ol class=&quot;carousel-indicators&quot; id=&quot;hero-carousel-indicators&quot;&gt;&lt;/ol&gt;
+
+
+
+      &lt;!--      &lt;div class=&quot;carousel-inner&quot; role=&quot;listbox&quot;&gt;--&gt;
+
+      &lt;!-- Slide 1 --&gt;
+      &lt;div class=&quot;carousel-item active&quot; style=&quot;background-image: url(static/assets/img/l2.png)&quot;&gt;
+
+        &lt;div class=&quot;container&quot;&gt;
+            &lt;!-- Registration Start --&gt;
+    &lt;div class=&quot;container-fluid bg-registration py-5&quot; style=&quot;margin: 90px 0;&quot;&gt;
+        &lt;div class=&quot;container py-5&quot;&gt;
+            &lt;div class=&quot;row align-items-center&quot;&gt;
+                
+                &lt;div class=&quot;col-lg-5&quot; style=&quot;left: 361px; top: 120px;&quot;&gt;
+                    &lt;div class=&quot;card border-0&quot;&gt;
+                        &lt;div class=&quot;card-header bg-primary text-center p-4&quot;&gt;
+                            &lt;h1 class=&quot;text-white m-0&quot;&gt;User Login&lt;/h1&gt;
+                        &lt;/div&gt;
+                        &lt;div class=&quot;card-body rounded-bottom bg-white p-5&quot;&gt;
+                            &lt;form action=&quot;{{url_for(&#x27;login&#x27;)}}&quot; method=&quot;post&quot;&gt;
+                                
+                                &lt;div class=&quot;form-group&quot;&gt;
+                                    &lt;input type=&quot;email&quot; name=&quot;useremail&quot; class=&quot;form-control p-4&quot; placeholder=&quot;Enter Your Email&quot; required=&quot;required&quot; /&gt;
+                                &lt;/div&gt;
+                                &lt;div class=&quot;form-group&quot;&gt;
+                                    &lt;input type=&quot;password&quot; name=&quot;userpassword&quot; class=&quot;form-control p-4&quot; placeholder=&quot;Enter Your Password&quot; required=&quot;required&quot; /&gt;
+                                &lt;/div&gt;
+                                &lt;div&gt;
+                                    &lt;button class=&quot;btn btn-primary btn-block py-3&quot; type=&quot;submit&quot;&gt;Login&lt;/button&gt;
+                                &lt;/div&gt;
+                            &lt;/form&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;!-- Registration End --&gt;
+          &lt;!-- &lt;h2 class=&quot;animate__animated animate__fadeInDown&quot;style=&quot;margin-top: 244px;&quot;&gt;Welcome to Phishing &lt;br&gt;&lt;span&gt;Website Detection&lt;/span&gt;&lt;/h2&gt;--&gt; --&gt;
+          &lt;!-- &lt;p class=&quot;animate__animated animate__fadeInUp&quot;&gt;Ut velit est quam dolor ad a aliquid qui aliquid. Sequi ea ut
+            et est quaerat sequi nihil ut aliquam. Occaecati alias dolorem mollitia ut. Similique ea voluptatem. Esse
+            doloremque accusamus repellendus deleniti vel. Minus et tempore modi architecto.&lt;/p&gt; --&gt;
+          &lt;!-- &lt;a href=&quot;#about&quot; class=&quot;btn-get-started animate__animated animate__fadeInUp scrollto&quot;&gt;Read More&lt;/a&gt; --&gt;
+        &lt;/div&gt;
+
+      &lt;/div&gt;
+
+
+
+
+      &lt;script src=&quot;static/assets/vendor/jquery/jquery.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/bootstrap/js/bootstrap.bundle.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/jquery.easing/jquery.easing.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/php-email-form/validate.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/isotope-layout/isotope.pkgd.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/venobox/venobox.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/waypoints/jquery.waypoints.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/owl.carousel/owl.carousel.min.js&quot;&gt;&lt;/script&gt;
+
+      &lt;!-- Template Main JS File --&gt;
+      &lt;script src=&quot;static/assets/js/main.js&quot;&gt;&lt;/script&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+&lt;/body&gt;
+
+&lt;/body&gt;
+
+&lt;/html&gt;</code></pre></section><section class="code-panel" id="file6"><div class="code-head"><span>frontend/templates/registration.html</span><span class="muted">163 lines</span></div><pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+
+&lt;head&gt;
+  &lt;meta charset=&quot;utf-8&quot;&gt;
+  &lt;meta content=&quot;width=device-width, initial-scale=1.0&quot; name=&quot;viewport&quot;&gt;
+
+  &lt;title&gt;Translation&lt;/title&gt;
+  &lt;meta content=&quot;&quot; name=&quot;description&quot;&gt;
+  &lt;meta content=&quot;&quot; name=&quot;keywords&quot;&gt;
+
+  &lt;!-- Favicons --&gt;
+  &lt;link href=&quot;static/assets/img/favicon.png&quot; rel=&quot;icon&quot;&gt;
+  &lt;link href=&quot;static/assets/img/apple-touch-icon.png&quot; rel=&quot;apple-touch-icon&quot;&gt;
+
+  &lt;!-- Google Fonts --&gt;
+  &lt;link
+    href=&quot;https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i&quot;
+    rel=&quot;stylesheet&quot;&gt;
+
+  &lt;!-- Vendor CSS Files --&gt;
+  &lt;link href=&quot;static/assets/vendor/bootstrap/css/bootstrap.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;static/assets/vendor/icofont/icofont.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;static/assets/vendor/boxicons/css/boxicons.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;static/assets/vendor/animate.css/animate.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;static/assets/vendor/remixicon/remixicon.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;static/assets/vendor/venobox/venobox.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;static/assets/vendor/owl.carousel/assets/owl.carousel.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+
+  &lt;!-- Template Main CSS File --&gt;
+  &lt;link href=&quot;static/assets/css/style.css&quot; rel=&quot;stylesheet&quot;&gt;
+
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+  &lt;!-- ======= Header ======= --&gt;
+  &lt;header style=&quot;color: white;&quot; id=&quot;header&quot; class=&quot;fixed-top &quot;&gt;
+    &lt;div class=&quot;container d-flex align-items-center&quot;&gt;
+
+      &lt;!-- &lt;h1 class=&quot;logo&quot;&gt;&lt;a href=&quot;/&quot;&gt;ON-SCREEN ACTIVITY TRACKING&lt;/a&gt;&lt;/h1&gt; --&gt;
+      &lt;!-- Uncomment below if you prefer to use an image logo --&gt;
+      &lt;a href=&quot;index.html&quot; class=&quot;logo&quot;&gt;&lt;img src=&quot;static/assets/img/logo.png&quot; alt=&quot;&quot; class=&quot;img-fluid&quot;&gt;&lt;/a&gt;
+
+      &lt;nav class=&quot;nav-menu d-none d-lg-block&quot;&gt;
+
+        &lt;div style=&quot;display: flex; list-style: none; margin-left: 450px; font-size: 30px;&quot;&gt;
+          &lt;a href=&quot;/&quot; style=&quot;margin-right: 20px; text-decoration: none; color: rgb(62, 224, 189);&quot;&gt;Home&lt;/a&gt;
+          &lt;a href=&quot;/about&quot; style=&quot;margin-right: 20px; text-decoration: none; color: rgb(62, 224, 189);&quot;&gt;About&lt;/a&gt;
+          &lt;a href=&quot;/login&quot; style=&quot;margin-right: 20px; text-decoration: none; color: rgb(62, 224, 189);&quot;&gt;Login&lt;/a&gt;
+          &lt;a href=&quot;/registration&quot; style=&quot;text-decoration: none; color: rgb(62, 224, 189);&quot;&gt;Register&lt;/a&gt;
+        &lt;/div&gt;
+
+      &lt;/nav&gt;&lt;!-- .nav-menu --&gt;
+
+      &lt;!--      &lt;a href=&quot;index.html&quot; class=&quot;get-started-btn ml-auto&quot;&gt;Get Started&lt;/a&gt;--&gt;
+
+    &lt;/div&gt;
+  &lt;/header&gt;&lt;!-- End Header --&gt;
+
+  &lt;div class=&quot;overlay&quot;&gt;
+    &lt;div class=&quot;gtco-container&quot;&gt;
+      &lt;div class=&quot;row&quot;&gt;
+        &lt;div class=&quot;col-md-12 col-md-offset-0 text-center&quot;&gt;
+          &lt;div class=&quot;display-t&quot;&gt;
+            &lt;div class=&quot;display-tc animate-box&quot; data-animate-effect=&quot;fadeIn&quot;&gt;
+              &lt;center&gt;
+                &lt;h3 style=&quot;bottom: 151px;color:rgb(11, 203, 236);top: -222;&quot;&gt;{{msg}}&lt;/h3&gt;
+              &lt;/center&gt;
+              &lt;!-- &lt;h3 style=&quot;color:rgb(11, 203, 236);bottom: 115px;&quot;&gt; Welcome To the website&lt;/h3&gt; --&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;!-- ======= Hero Section ======= --&gt;
+  &lt;section id=&quot;hero&quot;&gt;
+    &lt;div id=&quot;heroCarousel&quot; class=&quot;carousel slide carousel-fade&quot; data-ride=&quot;carousel&quot;&gt;
+
+      &lt;ol class=&quot;carousel-indicators&quot; id=&quot;hero-carousel-indicators&quot;&gt;&lt;/ol&gt;
+
+
+
+      &lt;!--      &lt;div class=&quot;carousel-inner&quot; role=&quot;listbox&quot;&gt;--&gt;
+
+      &lt;!-- Slide 1 --&gt;
+      &lt;div class=&quot;carousel-item active&quot; style=&quot;background-image: url(static/assets/img/l1.png)&quot;&gt;
+
+        &lt;div class=&quot;container&quot;&gt;
+            &lt;!-- Registration Start --&gt;
+    &lt;div class=&quot;container-fluid bg-registration py-5&quot; style=&quot;margin: 90px 0;&quot;&gt;
+        &lt;div class=&quot;container py-5&quot;&gt;
+            &lt;div class=&quot;row align-items-center&quot;&gt;
+                
+                &lt;div class=&quot;col-lg-5&quot; style=&quot;left: 361px;&quot;&gt;
+                    &lt;div class=&quot;card border-0&quot;&gt;
+                        &lt;div class=&quot;card-header bg-primary text-center p-4&quot;&gt;
+                            &lt;h1 class=&quot;text-white m-0&quot;&gt;User Registration&lt;/h1&gt;
+                        &lt;/div&gt;
+                        &lt;div class=&quot;card-body rounded-bottom bg-white p-5&quot;&gt;
+                            &lt;form action=&quot;{{url_for(&#x27;registration&#x27;)}}&quot; method=&quot;post&quot;&gt;
+                                &lt;div class=&quot;form-group&quot;&gt;
+                                    &lt;input type=&quot;name&quot; name=&quot;username&quot; class=&quot;form-control p-4&quot; placeholder=&quot;Enter Your Name&quot; required=&quot;required&quot; /&gt;
+                                &lt;/div&gt;
+                                &lt;div class=&quot;form-group&quot;&gt;
+                                    &lt;input type=&quot;email&quot; name=&quot;useremail&quot; class=&quot;form-control p-4&quot; placeholder=&quot;Enter Your Email&quot; required=&quot;required&quot; /&gt;
+                                &lt;/div&gt;
+                                &lt;div class=&quot;form-group&quot;&gt;
+                                    &lt;input type=&quot;password&quot; name=&quot;userpassword&quot; class=&quot;form-control p-4&quot; placeholder=&quot;Enter Your Password&quot; required=&quot;required&quot; /&gt;
+                                &lt;/div&gt;
+                                &lt;div class=&quot;form-group&quot;&gt;
+                                    &lt;input type=&quot;password&quot; name=&quot;conpassword&quot; class=&quot;form-control p-4&quot; placeholder=&quot;Enter Your Password&quot; required=&quot;required&quot; /&gt;
+                                &lt;/div&gt;
+                                &lt;div class=&quot;form-group&quot;&gt;
+                                    &lt;input type=&quot;number&quot; name=&quot;Age&quot; class=&quot;form-control p-4&quot; placeholder=&quot;Enter Your Age&quot; required=&quot;required&quot; /&gt;
+                                &lt;/div&gt;
+                                &lt;div class=&quot;form-group&quot;&gt;
+                                    &lt;input type=&quot;number&quot; name=&quot;contact&quot; class=&quot;form-control p-4&quot; placeholder=&quot;Enter Your Contact&quot; required=&quot;required&quot; /&gt;
+                                &lt;/div&gt;
+
+                                &lt;div&gt;
+                                    &lt;button class=&quot;btn btn-primary btn-block py-3&quot; type=&quot;submit&quot;&gt;Sign Up&lt;/button&gt;
+                                &lt;/div&gt;
+                            &lt;/form&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;!-- Registration End --&gt;
+          &lt;!-- &lt;h2 class=&quot;animate__animated animate__fadeInDown&quot;style=&quot;margin-top: 244px;&quot;&gt;Welcome to Phishing &lt;br&gt;&lt;span&gt;Website Detection&lt;/span&gt;&lt;/h2&gt;--&gt; --&gt;
+          &lt;!-- &lt;p class=&quot;animate__animated animate__fadeInUp&quot;&gt;Ut velit est quam dolor ad a aliquid qui aliquid. Sequi ea ut
+            et est quaerat sequi nihil ut aliquam. Occaecati alias dolorem mollitia ut. Similique ea voluptatem. Esse
+            doloremque accusamus repellendus deleniti vel. Minus et tempore modi architecto.&lt;/p&gt; --&gt;
+          &lt;!-- &lt;a href=&quot;#about&quot; class=&quot;btn-get-started animate__animated animate__fadeInUp scrollto&quot;&gt;Read More&lt;/a&gt; --&gt;
+        &lt;/div&gt;
+
+      &lt;/div&gt;
+
+
+
+
+      &lt;script src=&quot;static/assets/vendor/jquery/jquery.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/bootstrap/js/bootstrap.bundle.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/jquery.easing/jquery.easing.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/php-email-form/validate.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/isotope-layout/isotope.pkgd.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/venobox/venobox.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/waypoints/jquery.waypoints.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/owl.carousel/owl.carousel.min.js&quot;&gt;&lt;/script&gt;
+
+      &lt;!-- Template Main JS File --&gt;
+      &lt;script src=&quot;static/assets/js/main.js&quot;&gt;&lt;/script&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+&lt;/body&gt;
+
+&lt;/body&gt;
+
+&lt;/html&gt;</code></pre></section><section class="code-panel" id="file7"><div class="code-head"><span>frontend/templates/userhome.html</span><span class="muted">154 lines</span></div><pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+
+&lt;head&gt;
+  &lt;meta charset=&quot;utf-8&quot;&gt;
+  &lt;meta content=&quot;width=device-width, initial-scale=1.0&quot; name=&quot;viewport&quot;&gt;
+
+  &lt;title&gt;Translation&lt;/title&gt;
+  &lt;meta content=&quot;&quot; name=&quot;description&quot;&gt;
+  &lt;meta content=&quot;&quot; name=&quot;keywords&quot;&gt;
+
+  &lt;!-- Favicons --&gt;
+  &lt;link href=&quot;static/assets/img/favicon.png&quot; rel=&quot;icon&quot;&gt;
+  &lt;link href=&quot;static/assets/img/apple-touch-icon.png&quot; rel=&quot;apple-touch-icon&quot;&gt;
+
+  &lt;!-- Google Fonts --&gt;
+  &lt;link
+    href=&quot;https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i&quot;
+    rel=&quot;stylesheet&quot;&gt;
+
+  &lt;!-- Vendor CSS Files --&gt;
+  &lt;link href=&quot;static/assets/vendor/bootstrap/css/bootstrap.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;static/assets/vendor/icofont/icofont.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;static/assets/vendor/boxicons/css/boxicons.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;static/assets/vendor/animate.css/animate.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;static/assets/vendor/remixicon/remixicon.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;static/assets/vendor/venobox/venobox.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;static/assets/vendor/owl.carousel/assets/owl.carousel.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+
+  &lt;!-- Template Main CSS File --&gt;
+  &lt;link href=&quot;static/assets/css/style.css&quot; rel=&quot;stylesheet&quot;&gt;
+
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+  &lt;!-- ======= Header ======= --&gt;
+  &lt;header style=&quot;color: white;&quot; id=&quot;header&quot; class=&quot;fixed-top &quot;&gt;
+    &lt;div class=&quot;container d-flex align-items-center&quot;&gt;
+
+      &lt;!-- &lt;h1 class=&quot;logo&quot;&gt;&lt;a href=&quot;/&quot;&gt;ON-SCREEN ACTIVITY TRACKING&lt;/a&gt;&lt;/h1&gt; --&gt;
+      &lt;!-- Uncomment below if you prefer to use an image logo --&gt;
+      &lt;a href=&quot;index.html&quot; class=&quot;logo&quot;&gt;&lt;img src=&quot;static/assets/img/logo.png&quot; alt=&quot;&quot; class=&quot;img-fluid&quot;&gt;&lt;/a&gt;
+
+      &lt;nav class=&quot;nav-menu d-none d-lg-block&quot;&gt;
+
+        &lt;style&gt;
+          ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #333;
+          }
+        
+          li {
+            display: inline-block;
+          }
+        
+          li a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+          }
+        
+          li a:hover {
+            background-color: #bccfce;
+          }
+        &lt;/style&gt;
+        
+        &lt;ul&gt;
+          &lt;li class=&quot;active&quot;&gt;&lt;a href=&quot;/&quot;&gt;Home&lt;/a&gt;&lt;/li&gt;
+          &lt;!-- &lt;li&gt;&lt;a href=&quot;/login&quot;&gt;Login&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;/registration&quot;&gt;Register&lt;/a&gt;&lt;/li&gt; --&gt;
+        
+          
+          &lt;li&gt;&lt;a href=&quot;/prediction&quot;&gt;Prediction&lt;/a&gt;&lt;/li&gt;
+        
+          &lt;li&gt;&lt;a href=&quot;/login&quot;&gt;LogOut&lt;/a&gt;&lt;/li&gt;
+          &lt;!-- &lt;li&gt;&lt;a href=&quot;/load data&quot;&gt;Load Data&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;/view data&quot;&gt;View Data&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;/model&quot;&gt;Select Model&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;/graph&quot;&gt;Graph&lt;/a&gt;&lt;/li&gt; --&gt;
+        &lt;/ul&gt;
+        
+
+      &lt;!--      &lt;a href=&quot;index.html&quot; class=&quot;get-started-btn ml-auto&quot;&gt;Get Started&lt;/a&gt;--&gt;
+
+    &lt;/div&gt;
+  &lt;/header&gt;&lt;!-- End Header --&gt;
+
+  &lt;div class=&quot;overlay&quot;&gt;
+    &lt;div class=&quot;gtco-container&quot;&gt;
+      &lt;div class=&quot;row&quot;&gt;
+        &lt;div class=&quot;col-md-12 col-md-offset-0 text-center&quot;&gt;
+          &lt;div class=&quot;display-t&quot;&gt;
+            &lt;div class=&quot;display-tc animate-box&quot; data-animate-effect=&quot;fadeIn&quot;&gt;
+              &lt;center&gt;
+                &lt;h3 style=&quot;bottom: 151px;color:rgb(11, 203, 236);top: -222;&quot;&gt;{{msg}}&lt;/h3&gt;
+              &lt;/center&gt;
+              &lt;!-- &lt;h3 style=&quot;color:rgb(11, 203, 236);bottom: 115px;&quot;&gt; Welcome To the website&lt;/h3&gt; --&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;!-- ======= Hero Section ======= --&gt;
+  &lt;section id=&quot;hero&quot;&gt;
+    &lt;div id=&quot;heroCarousel&quot; class=&quot;carousel slide carousel-fade&quot; data-ride=&quot;carousel&quot;&gt;
+
+      &lt;ol class=&quot;carousel-indicators&quot; id=&quot;hero-carousel-indicators&quot;&gt;&lt;/ol&gt;
+
+
+
+      &lt;!--      &lt;div class=&quot;carousel-inner&quot; role=&quot;listbox&quot;&gt;--&gt;
+
+      &lt;!-- Slide 1 --&gt;
+      &lt;div class=&quot;carousel-item active&quot; style=&quot;background-image: url(static/assets/img/l3.png)&quot;&gt;
+
+        &lt;div class=&quot;container&quot;&gt;
+          &lt;h2 class=&quot;animate__animated animate__fadeInDown&quot;style=&quot;margin-top: 244px;color: rgb(62, 224, 189);&quot;&gt;Welcome {{myname}} &lt;br&gt;&lt;br&gt;&lt;span&gt; Announcements And Information Dissemination At Stations &lt;/span&gt;&lt;/h2&gt;--&gt;
+          &lt;!-- &lt;p class=&quot;animate__animated animate__fadeInUp&quot;&gt;Ut velit est quam dolor ad a aliquid qui aliquid. Sequi ea ut
+            et est quaerat sequi nihil ut aliquam. Occaecati alias dolorem mollitia ut. Similique ea voluptatem. Esse
+            doloremque accusamus repellendus deleniti vel. Minus et tempore modi architecto.&lt;/p&gt; --&gt;
+          &lt;!-- &lt;a href=&quot;#about&quot; class=&quot;btn-get-started animate__animated animate__fadeInUp scrollto&quot;&gt;Read More&lt;/a&gt; --&gt;
+        &lt;/div&gt;
+
+      &lt;/div&gt;
+
+
+
+
+      &lt;script src=&quot;static/assets/vendor/jquery/jquery.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/bootstrap/js/bootstrap.bundle.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/jquery.easing/jquery.easing.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/php-email-form/validate.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/isotope-layout/isotope.pkgd.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/venobox/venobox.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/waypoints/jquery.waypoints.min.js&quot;&gt;&lt;/script&gt;
+      &lt;script src=&quot;static/assets/vendor/owl.carousel/owl.carousel.min.js&quot;&gt;&lt;/script&gt;
+
+      &lt;!-- Template Main JS File --&gt;
+      &lt;script src=&quot;static/assets/js/main.js&quot;&gt;&lt;/script&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+&lt;/body&gt;
+
+&lt;/body&gt;
+
+&lt;/html&gt;</code></pre></section><section class="code-panel" id="file8"><div class="code-head"><span>frontend/templates/prediction.html</span><span class="muted">192 lines</span></div><pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+
+&lt;head&gt;
+  &lt;meta charset=&quot;utf-8&quot;&gt;
+  &lt;meta content=&quot;width=device-width, initial-scale=1.0&quot; name=&quot;viewport&quot;&gt;
+
+  &lt;title&gt;Translation&lt;/title&gt;
+  &lt;meta content=&quot;&quot; name=&quot;description&quot;&gt;
+  &lt;meta content=&quot;&quot; name=&quot;keywords&quot;&gt;
+
+  &lt;!-- Favicons --&gt;
+  &lt;link href=&quot;static/assets/img/favicon.png&quot; rel=&quot;icon&quot;&gt;
+&lt;!--  &lt;link href=&quot;static/assets/img/apple-touch-icon.png&quot; rel=&quot;apple-touch-icon&quot;&gt;--&gt;
+
+  &lt;!-- Google Fonts --&gt;
+  &lt;link href=&quot;https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i&quot; rel=&quot;stylesheet&quot;&gt;
+
+  &lt;!-- Vendor CSS Files --&gt;
+  &lt;link href=&quot;static/assets/vendor/bootstrap/css/bootstrap.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;static/assets/vendor/icofont/icofont.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;static/assets/vendor/boxicons/css/boxicons.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;static/assets/vendor/animate.css/animate.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;static/assets/vendor/remixicon/remixicon.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;static/assets/vendor/venobox/venobox.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;link href=&quot;static/assets/vendor/owl.carousel/assets/owl.carousel.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+
+  &lt;!-- Template Main CSS File --&gt;
+  &lt;link href=&quot;static/assets/css/style.css&quot; rel=&quot;stylesheet&quot;&gt;
+
+  &lt;!-- =======================================================
+  * Template Name: Sailor - v2.3.1
+  * Template URL: https://bootstrapmade.com/sailor-free-bootstrap-theme/
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== --&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+
+  &lt;!-- ======= Header ======= --&gt;
+  &lt;header id=&quot;header&quot; class=&quot;fixed-top &quot;&gt;
+    &lt;div class=&quot;container d-flex align-items-center&quot;&gt;
+
+      &lt;!-- &lt;h1 class=&quot;logo&quot;&gt;&lt;a href=&quot;/&quot;&gt;E-LEARNING&lt;/a&gt;&lt;/h1&gt; --&gt;
+      &lt;!-- Uncomment below if you prefer to use an image logo --&gt;
+       &lt;a href=&quot;index.html&quot; class=&quot;logo&quot;&gt;&lt;img src=&quot;static/assets/img/logo.png&quot; alt=&quot;&quot; class=&quot;img-fluid&quot;&gt;&lt;/a&gt;
+
+      &lt;nav class=&quot;nav-menu d-none d-lg-block&quot;&gt;
+
+        &lt;style&gt;
+          ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #333;
+          }
+        
+          li {
+            display: inline-block;
+          }
+        
+          li a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+          }
+        
+          li a:hover {
+            background-color: #bccfce;
+          }
+        &lt;/style&gt;
+        
+        &lt;ul&gt;
+          &lt;li&gt;&lt;a href=&quot;/&quot;&gt;Home&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;/prediction&quot;&gt;Prediction&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;/login&quot;&gt;LogOut&lt;/a&gt;&lt;/li&gt;
+          &lt;!-- &lt;li class=&quot;active&quot;&gt;&lt;a href=&quot;/load data&quot;&gt;Load Data&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;/view data&quot;&gt;View Data&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;/model&quot;&gt;Select Model&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;/graph&quot;&gt;Graph&lt;/a&gt;&lt;/li&gt; --&gt;
+        &lt;/ul&gt;
+        
+
+      &lt;/nav&gt;&lt;!-- .nav-menu --&gt;
+
+
+    &lt;/div&gt;
+  &lt;/header&gt;&lt;!-- End Header --&gt;
+
+  &lt;section id=&quot;hero&quot;&gt;
+    &lt;div id=&quot;heroCarousel&quot; class=&quot;carousel slide carousel-fade&quot; data-ride=&quot;carousel&quot;&gt;
+      &lt;!-- &lt;h1 style=&quot;color:rgb(11, 177, 25);&quot;&gt;{{msg}}&lt;/h1&gt; --&gt;
+
+      &lt;ol class=&quot;carousel-indicators&quot; id=&quot;hero-carousel-indicators&quot;&gt;&lt;/ol&gt;
+
+&lt;!--      &lt;div class=&quot;carousel-inner&quot; role=&quot;listbox&quot;&gt;--&gt;
+                  &lt;div class=&quot;carousel-item active&quot; style=&quot;color:bright;background-image: url(static/assets/img/z1.png)&quot;&gt;
+                    &lt;!-- &lt;h1 style=&quot;color:rgb(27, 173, 76);&quot;&gt;{{msg}}&lt;/h1&gt; --&gt;
+
+          &lt;div class=&quot;carousel-container&quot;&gt;
+            &lt;!-- &lt;center&gt;&lt;h4 style=&quot;color:white;&quot;&gt;{{msg}}&lt;/h4&gt;&lt;/center&gt; --&gt;
+            &lt;div class=&quot;container text-center my-5 py-5&quot;&gt;
+              &lt;center&gt;
+                  &lt;h3 style=&quot;bottom: 250px;color:rgb(103, 223, 223);padding-top: 100px;&quot;&gt;{{msg}}&lt;/h3&gt;
+                  {% if audio_url %}&lt;audio controls autoplay src=&quot;{{ audio_url }}&quot;&gt;&lt;/audio&gt;{% endif %}
+                  &lt;/center&gt;
+              &lt;center&gt;
+                  &lt;!-- &lt;h3 style=&quot;bottom: 222px;color:white;padding-top: 118px;&quot;&gt;ON-SCREEN ACTIVITY TRACKING&lt;/h3&gt; --&gt;
+               &lt;/center&gt;
+               &lt;h3 style=&quot;color:white;&quot;&gt;  &lt;/h3&gt;
+  
+  
+               &lt;h3 style=&quot;color:white;bottom: 100px;&quot;&gt;With the help of Machine Learning &lt;/h3&gt;
+               &lt;p&gt;
+  
+  
+  
+                &lt;form action=&quot;/prediction&quot; method=&quot;post&quot; enctype=&quot;multipart/form-data&quot;&gt;
+                  &lt;center&gt;
+                    &lt;select name=&quot;f1&quot; id=&quot;&quot;&gt;
+                      &lt;option value=&quot;&quot;&gt;Select Language you want to speak&lt;/option&gt;
+                      &lt;option value=&quot;en&quot;&gt;English&lt;/option&gt; 
+                      &lt;option value=&quot;hi&quot;&gt;Hindi&lt;/option&gt;
+                      &lt;option value=&quot;te&quot;&gt;Telugu&lt;/option&gt;
+                      &lt;option value=&quot;mr&quot;&gt;Marathi&lt;/option&gt;
+                      &lt;option value=&quot;gu&quot;&gt;Gujarati&lt;/option&gt;
+                      &lt;option value=&quot;kn&quot;&gt;Kannada&lt;/option&gt;
+                      &lt;option value=&quot;pa&quot;&gt;Punjabi&lt;/option&gt;
+                      &lt;option value=&quot;zh-cn&quot;&gt;Chinese&lt;/option&gt;
+                      &lt;option value=&quot;es&quot;&gt;Spanish &lt;/option&gt;
+                      &lt;option value=&quot;ar&quot;&gt;Arabic&lt;/option&gt;
+                      &lt;option value=&quot;pt&quot;&gt;Portuguese&lt;/option&gt;
+                      &lt;option value=&quot;ru&quot;&gt;Russian&lt;/option&gt;
+                      &lt;option value=&quot;ja&quot;&gt;Japanese&lt;/option&gt;
+                      &lt;option value=&quot;fr&quot;&gt;French&lt;/option&gt;
+                    &lt;/select&gt;
+                    &lt;select name=&quot;f2&quot; id=&quot;&quot;&gt;
+                      &lt;option value=&quot;&quot;&gt;Select Language you want to Convert&lt;/option&gt;
+                      &lt;option value=&quot;en&quot;&gt;English&lt;/option&gt;
+                      &lt;option value=&quot;hi&quot;&gt;Hindi&lt;/option&gt;
+                      &lt;option value=&quot;te&quot;&gt;Telugu&lt;/option&gt;
+                      &lt;option value=&quot;mr&quot;&gt;Marathi&lt;/option&gt;
+                      &lt;option value=&quot;gu&quot;&gt;Gujarati&lt;/option&gt;
+                      &lt;option value=&quot;kn&quot;&gt;Kannada&lt;/option&gt;
+                      &lt;option value=&quot;pa&quot;&gt;Punjabi&lt;/option&gt;
+                      &lt;option value=&quot;zh-cn&quot;&gt;Chinese&lt;/option&gt;
+                      &lt;option value=&quot;es&quot;&gt;Spanish &lt;/option&gt;
+                      &lt;option value=&quot;ar&quot;&gt;Arabic&lt;/option&gt;
+                      &lt;option value=&quot;pt&quot;&gt;Portuguese&lt;/option&gt;
+                      &lt;option value=&quot;ru&quot;&gt;Russian&lt;/option&gt;
+                      &lt;option value=&quot;ja&quot;&gt;Japanese&lt;/option&gt;
+                      &lt;option value=&quot;fr&quot;&gt;French&lt;/option&gt;&lt;/select&gt;
+                    &lt;!-- &lt;input type=&quot;text&quot; name=&quot;f1&quot; placeholder=&quot;Select Language you want to speak&quot;style=&quot;height: 75px;width: 300px; color:rgb(2, 18, 20); border-color:rgb(11, 203, 236);&quot;&gt; 
+                    &lt;input type=&quot;text&quot; name=&quot;f2&quot; placeholder=&quot;Select Language you want to Conver&quot;style=&quot;height: 75px;width: 300px; color:rgb(2, 18, 20); border-color:rgb(11, 203, 236);&quot;&gt;&lt;br&gt; --&gt;
+                      
+                  &lt;/center&gt;
+                  &lt;/center&gt;
+
+                  &lt;input class=&quot;white_bt bt_main&quot; type=&quot;submit&quot; value=&quot;Submit&quot;
+                     style=&quot;margin-left: 0px;margin-top: 30px;&quot;&gt;
+               &lt;/form&gt;
+          &lt;/div&gt;
+      &lt;/div&gt;
+          &lt;/div&gt;
+&lt;!--      &lt;/div&gt;--&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+
+
+
+
+
+          &lt;script src=&quot;static/assets/vendor/jquery/jquery.min.js&quot;&gt;&lt;/script&gt;
+          &lt;script src=&quot;static/assets/vendor/bootstrap/js/bootstrap.bundle.min.js&quot;&gt;&lt;/script&gt;
+          &lt;script src=&quot;static/assets/vendor/jquery.easing/jquery.easing.min.js&quot;&gt;&lt;/script&gt;
+          &lt;script src=&quot;static/assets/vendor/php-email-form/validate.js&quot;&gt;&lt;/script&gt;
+          &lt;script src=&quot;static/assets/vendor/isotope-layout/isotope.pkgd.min.js&quot;&gt;&lt;/script&gt;
+          &lt;script src=&quot;static/assets/vendor/venobox/venobox.min.js&quot;&gt;&lt;/script&gt;
+          &lt;script src=&quot;static/assets/vendor/waypoints/jquery.waypoints.min.js&quot;&gt;&lt;/script&gt;
+          &lt;script src=&quot;static/assets/vendor/owl.carousel/owl.carousel.min.js&quot;&gt;&lt;/script&gt;
+
+  &lt;!-- Template Main JS File --&gt;
+          &lt;script src=&quot;static/assets/js/main.js&quot;&gt;&lt;/script&gt;
+
+&lt;/body&gt;
+
+&lt;/html&gt;</code></pre></section><section class="code-panel" id="file9"><div class="code-head"><span>README.md</span><span class="muted">18 lines</span></div><pre><code># NLP-Powered Language Translation System
+
+Speak an announcement in one language and hear it in another.
+Pipeline: microphone -&gt; Google Speech Recognition -&gt; googletrans -&gt; gTTS (MP3).
+
+## Structure
+- backend/app.py          Flask server: login, registration, speech translation
+- backend/database.sql    MySQL schema (database `announcement`, table `user`)
+- backend/requirements.txt
+- frontend/templates/     Jinja2 HTML pages
+- frontend/static/        Page CSS and JS (images and vendor libraries not included)
+
+## Run
+1. Import backend/database.sql into MySQL.
+2. pip install -r backend/requirements.txt
+3. Put app.py next to the templates/ and static/ folders, then: python app.py
+4. Open http://127.0.0.1:5000
+</code></pre></section></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><p class="muted">&copy; 2026 Mohini Pragada</p></div>
+  </footer>
+
+  <script>
+    // Show the file whose button was clicked
+    document.querySelectorAll(".file-btn").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        document.querySelectorAll(".file-btn, .code-panel").forEach(function (el) {
+          el.classList.remove("active");
+        });
+        btn.classList.add("active");
+        document.getElementById(btn.dataset.target).classList.add("active");
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,770 @@
+/* =========================================================
+   1. COLOR & SIZE VARIABLES
+   Change a value here and it updates everywhere on the site.
+   ========================================================= */
+:root {
+  --bg: #0b0d17;            /* page background */
+  --bg-alt: #10142a;        /* alternate section background */
+  --card: #151a2d;          /* card background */
+  --border: #262d4a;        /* thin card borders */
+  --text: #f5f7ff;          /* main text */
+  --muted: #9aa3bf;         /* secondary text */
+  --primary: #7c5cff;       /* violet accent */
+  --secondary: #22d3ee;     /* cyan accent */
+  --gradient: linear-gradient(135deg, #7c5cff, #22d3ee);
+  --radius: 16px;           /* rounded corners */
+  --max-width: 1120px;      /* max content width */
+}
+
+/* =========================================================
+   2. BASIC RESET
+   ========================================================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* padding is included inside width */
+}
+
+html {
+  scroll-behavior: smooth; /* smooth scrolling when clicking nav links */
+}
+
+body {
+  font-family: "Inter", Arial, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4 {
+  font-family: "Sora", Arial, sans-serif;
+  line-height: 1.25;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+/* Centers content and adds side spacing */
+.container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* =========================================================
+   3. REUSABLE PIECES (buttons, cards, tags, grids)
+   ========================================================= */
+.btn {
+  display: inline-block;
+  padding: 12px 26px;
+  border-radius: 999px;          /* pill shape */
+  background: var(--gradient);
+  color: #fff;
+  font-weight: 600;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(124, 92, 255, 0.35);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+}
+
+.btn-outline:hover {
+  border-color: var(--primary);
+}
+
+.btn-small {
+  padding: 8px 18px;
+}
+
+.card {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+}
+
+.card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+}
+
+/* Small pill labels used for skills */
+.tags {
+  display: flex;
+  flex-wrap: wrap;   /* tags move to the next line when there's no space */
+  gap: 8px;
+}
+
+.tags li {
+  background-color: rgba(124, 92, 255, 0.12);
+  color: #c9bfff;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+}
+
+.tags.small li {
+  font-size: 0.75rem;
+  padding: 4px 10px;
+}
+
+/* Grid layouts: CSS Grid places cards in columns */
+.grid {
+  display: grid;
+  gap: 24px;
+}
+
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+
+.gradient-text {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* =========================================================
+   4. SECTIONS (shared styles)
+   ========================================================= */
+.section {
+  padding: 96px 0;
+}
+
+.section-alt {
+  background-color: var(--bg-alt);
+}
+
+.section-label {
+  color: var(--secondary);
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.section h2 {
+  font-size: 2.2rem;
+  margin-bottom: 16px;
+}
+
+.section-intro {
+  color: var(--muted);
+  max-width: 600px;
+  margin-bottom: 40px;
+}
+
+.section h2 + .grid,
+.section h2 + .timeline {
+  margin-top: 32px;
+}
+
+.sub-heading {
+  margin: 56px 0 24px;
+  font-size: 1.3rem;
+}
+
+/* =========================================================
+   5. NAVIGATION BAR
+   ========================================================= */
+.navbar {
+  position: sticky;   /* stays at the top while scrolling */
+  top: 0;
+  z-index: 100;       /* keeps it above other content */
+  background-color: rgba(11, 13, 23, 0.85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-content {
+  display: flex;
+  justify-content: space-between; /* logo left, links right */
+  align-items: center;
+  height: 70px;
+}
+
+.logo {
+  font-family: "Sora", sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.logo span {
+  color: var(--secondary);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.nav-links a {
+  color: var(--muted);
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover {
+  color: var(--text);
+}
+
+.nav-links .btn {
+  color: #fff;
+}
+
+.menu-toggle {
+  display: none;  /* hidden on desktop */
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+/* =========================================================
+   6. HERO
+   ========================================================= */
+.hero {
+  padding: 100px 0 60px;
+  background: radial-gradient(circle at 80% 20%, rgba(124, 92, 255, 0.2), transparent 50%);
+}
+
+.hero-content {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  align-items: center;
+  gap: 48px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.hero-subtitle {
+  color: var(--muted);
+  font-size: 1.1rem;
+  max-width: 540px;
+  margin-bottom: 32px;
+}
+
+.hero-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* Profile card on the right side of the hero */
+.profile-card {
+  padding: 28px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.profile-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.profile-top h3 {
+  margin: 0;
+}
+
+.profile-top p {
+  font-size: 0.9rem;
+}
+
+/* Round circle with initials */
+.avatar {
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;         /* stops the circle from getting squashed */
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--gradient);
+  font-family: "Sora", sans-serif;
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+.profile-info {
+  margin: 20px 0;
+  display: grid;
+  gap: 14px;
+}
+
+.profile-info li {
+  font-size: 0.95rem;
+}
+
+/* Small label above each detail, e.g. "Degree" */
+.profile-info span {
+  display: block;
+  color: var(--secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* =========================================================
+   7. ABOUT
+   ========================================================= */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+
+.about-grid p {
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+.about-grid strong {
+  color: var(--text);
+}
+
+.fact-list {
+  display: grid;
+  gap: 16px;
+}
+
+.fact {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+}
+
+.fact-icon {
+  font-size: 1.6rem;
+}
+
+.fact h3 {
+  font-size: 0.95rem;
+  margin-bottom: 2px;
+}
+
+.fact p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* =========================================================
+   8. AI TOOLS
+   ========================================================= */
+.tool-icon {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;  /* centers the icon */
+  border-radius: 12px;
+  background: var(--gradient);
+  font-size: 1.4rem;
+  margin-bottom: 16px;
+}
+
+.tool-card p {
+  color: var(--muted);
+}
+
+/* =========================================================
+   9. PROJECTS
+   ========================================================= */
+.project-card {
+  margin-top: 32px;
+  padding: 0;
+  overflow: hidden;  /* keeps the thumbnail inside the rounded corners */
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;  /* thumbnail left, details right */
+}
+
+.project-thumb {
+  min-height: 220px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #7c5cff, #4338ca);
+  font-family: "Sora", sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.project-body {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.project-body h3 {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.project-tag {
+  color: var(--secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Description / contribution / technologies list */
+.project-details dt {
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-top: 10px;
+}
+
+.project-details dd {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin-top: 4px;
+}
+
+.project-links {
+  display: flex;
+  flex-wrap: wrap;   /* links wrap onto a new line on small screens */
+  gap: 12px 24px;
+  justify-content: space-between;
+  margin-top: auto;  /* pushes links to the bottom of the card */
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.project-links a:hover {
+  color: var(--secondary);
+}
+
+/* Screenshot inside the project thumbnail */
+.project-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: left center;
+}
+
+/* Project output: screenshots */
+.shot {
+  padding: 12px;
+}
+
+.shot img {
+  display: block;
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.shot figcaption {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: 10px;
+}
+
+.sub-heading + .section-intro {
+  margin-top: -12px;
+  margin-bottom: 24px;
+}
+
+/* Project output: translation examples */
+.output-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.output-lang {
+  color: var(--secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.output-in {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.output-out {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.output-card audio {
+  width: 100%;
+  margin-top: auto;
+}
+
+/* Source code viewer page (projects/nlp-translator/code.html) */
+.code-viewer {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 24px;
+  margin-top: 40px;
+  align-items: start;
+}
+
+.file-list {
+  position: sticky;
+  top: 90px;
+  padding: 16px;
+}
+
+.file-list:hover {
+  transform: none;  /* don't lift the file list like other cards */
+}
+
+.file-group {
+  color: var(--secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 12px 0 6px;
+}
+
+.file-group:first-child {
+  margin-top: 0;
+}
+
+.file-btn {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.file-btn:hover,
+.file-btn.active {
+  background-color: rgba(124, 92, 255, 0.15);
+  color: var(--text);
+}
+
+.code-panel {
+  display: none;
+  min-width: 0;  /* lets the code scroll instead of stretching the page */
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.code-panel.active {
+  display: block;
+}
+
+.code-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  background-color: var(--card);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.code-panel pre {
+  margin: 0;
+  padding: 16px;
+  max-height: 75vh;
+  overflow: auto;
+  background-color: #080a12;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  tab-size: 4;
+}
+
+/* =========================================================
+   10. DESIGN WORK
+   ========================================================= */
+/* Dashed box that says "Coming Soon" */
+.coming-soon {
+  text-align: center;
+  padding: 56px 24px;
+  border-style: dashed;
+}
+
+.coming-soon p {
+  color: var(--muted);
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* =========================================================
+   11. EDUCATION
+   ========================================================= */
+.timeline {
+  display: grid;
+  gap: 16px;
+  border-left: 2px solid var(--border);
+  padding-left: 24px;
+}
+
+.timeline-date {
+  color: var(--secondary);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.timeline-item h3 {
+  margin: 4px 0 6px;
+}
+
+.extra {
+  margin-top: 40px;
+}
+
+.list li {
+  color: var(--muted);
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.list li:last-child {
+  border-bottom: none;
+}
+
+.list strong {
+  color: var(--text);
+}
+
+/* =========================================================
+   12. CONTACT & FOOTER
+   ========================================================= */
+.contact-box {
+  text-align: center;
+}
+
+.contact .section-intro {
+  margin: 0 auto 32px;
+}
+
+.social-links {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.social-links a {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.social-links a:hover {
+  color: var(--secondary);
+}
+
+.footer {
+  text-align: center;
+  padding: 32px 0;
+  border-top: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+
+/* =========================================================
+   13. RESPONSIVE DESIGN (media queries)
+   These rules only apply on smaller screens.
+   ========================================================= */
+
+/* Tablets (900px wide or less) */
+@media (max-width: 900px) {
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+
+  .hero-content,
+  .about-grid,
+  .project-card {
+    grid-template-columns: 1fr;  /* stack into one column */
+  }
+
+  .hero h1 { font-size: 2.4rem; }
+}
+
+/* Phones (700px wide or less) */
+@media (max-width: 700px) {
+  .section { padding: 64px 0; }
+  .section h2 { font-size: 1.8rem; }
+  .hero { padding-top: 60px; }
+  .hero h1 { font-size: 2rem; }
+
+  .grid-2,
+  .grid-3,
+  .code-viewer {
+    grid-template-columns: 1fr;
+  }
+
+  .file-list {
+    position: static;
+  }
+
+  /* Mobile menu */
+  .menu-toggle { display: block; }
+
+  .nav-links {
+    display: none;             /* hidden until the button is clicked */
+    position: absolute;
+    top: 70px;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    gap: 20px;
+    padding: 24px;
+    background-color: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-links.open {
+    display: flex;             /* JavaScript adds the "open" class */
+  }
+}

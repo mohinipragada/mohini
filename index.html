@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Basic page settings -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Portfolio of Mohini Pragada - B.Sc. Computer Science graduate and aspiring AI Web Designer and UI Designer">
+  <title>Mohini Pragada | Aspiring AI Web Designer</title>
+
+  <!-- Google Fonts: Sora for headings, Inter for body text -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- Our stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ========== 1. NAVIGATION BAR ========== -->
+  <header class="navbar">
+    <div class="container nav-content">
+      <a href="#home" class="logo">Mohini<span>.</span></a>
+
+      <!-- Hamburger button: only visible on mobile -->
+      <button class="menu-toggle" id="menuToggle" aria-label="Open menu">&#9776;</button>
+
+      <nav>
+        <ul class="nav-links" id="navLinks">
+          <li><a href="#about">About</a></li>
+          <li><a href="#skills">Skills</a></li>
+          <li><a href="#ai-tools">AI Tools</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#design-work">Design Work</a></li>
+          <li><a href="#education">Education</a></li>
+          <li><a href="#contact" class="btn btn-small">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ========== 2. HERO SECTION ========== -->
+    <section id="home" class="hero">
+      <div class="container hero-content">
+        <div class="hero-text">
+          <p class="badge">🎓 B.Sc. Computer Science Graduate · Fresher</p>
+          <h1>Hi, I'm Mohini Pragada.<br>An aspiring <span class="gradient-text">AI Web Designer &amp; UI Designer.</span></h1>
+          <p class="hero-subtitle">
+            I'm interested in creating clean, responsive and user-friendly web interfaces
+            using HTML, CSS and AI-powered design tools.
+          </p>
+          <div class="hero-buttons">
+            <a href="#projects" class="btn">View My Projects</a>
+            <!-- Put your resume PDF inside the "assets" folder with this exact name -->
+            <a href="assets/Mohini-Pragada-Resume.pdf" class="btn btn-outline" download>Download Resume</a>
+          </div>
+        </div>
+
+        <!-- Profile card with key details from my resume -->
+        <div class="card profile-card">
+          <div class="profile-top">
+            <div class="avatar">MP</div>
+            <div>
+              <h3>Mohini Pragada</h3>
+              <p class="muted">Aspiring AI Web Designer &amp; UI Designer</p>
+            </div>
+          </div>
+
+          <ul class="profile-info">
+            <li><span>Degree</span>B.Sc. Computer Science (AI &amp; Robotics)</li>
+            <li><span>College</span>Aditya Degree College for Women, Kakinada</li>
+            <li><span>Batch</span>2023 – 2026 · CGPA 7.5</li>
+            <li><span>Project</span>NLP-Powered Language Translation System</li>
+          </ul>
+
+          <ul class="tags small">
+            <li>HTML</li>
+            <li>CSS</li>
+            <li>UI/UX Fundamentals</li>
+            <li>Python</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 3. ABOUT ME ========== -->
+    <section id="about" class="section">
+      <div class="container about-grid">
+        <div>
+          <p class="section-label">About Me</p>
+          <h2>Hello, I'm Mohini</h2>
+          <p>
+            I'm a <strong>B.Sc. Computer Science graduate</strong> and an aspiring
+            <strong>AI Web Designer &amp; UI Designer</strong>. I'm interested in creating clean,
+            responsive and user-friendly web interfaces using HTML, CSS and AI-powered design tools.
+          </p>
+          <p>
+            As a fresher, I'm building my skills in web design and UI/UX fundamentals, and I'm
+            exploring AI tools like Google Stitch and Claude to learn how they can support the
+            design process. I enjoy learning new things, I value feedback, and I'm looking for an
+            opportunity to grow as a web designer.
+          </p>
+        </div>
+
+        <!-- Quick fact cards -->
+        <div class="fact-list">
+          <div class="card fact">
+            <span class="fact-icon">🎓</span>
+            <div><h3>Education</h3><p>B.Sc. Computer Science (AI &amp; Robotics), 2023 – 2026</p></div>
+          </div>
+          <div class="card fact">
+            <span class="fact-icon">💡</span>
+            <div><h3>Interest</h3><p>Web design, UI/UX, AI-powered design</p></div>
+          </div>
+          <div class="card fact">
+            <span class="fact-icon">✅</span>
+            <div><h3>Status</h3><p>Fresher, available for full-time roles</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 4. SKILLS (from resume) ========== -->
+    <section id="skills" class="section section-alt">
+      <div class="container">
+        <p class="section-label">Skills</p>
+        <h2>What I work with</h2>
+
+        <div class="grid grid-3">
+          <div class="card">
+            <h3>🌐 Web Technologies</h3>
+            <ul class="tags">
+              <li>HTML</li>
+              <li>CSS</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>🎨 AI &amp; Design</h3>
+            <ul class="tags">
+              <li>Artificial Intelligence</li>
+              <li>UI/UX Fundamentals</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>💻 Programming</h3>
+            <ul class="tags">
+              <li>Python</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>🗄️ Data &amp; Database</h3>
+            <ul class="tags">
+              <li>Pandas</li>
+              <li>NumPy</li>
+              <li>SQL</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>🛠️ Tools &amp; Platforms</h3>
+            <ul class="tags">
+              <li>Excel</li>
+              <li>Jupyter Notebook</li>
+              <li>Visual Studio</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 5. AI TOOLS ========== -->
+    <section id="ai-tools" class="section">
+      <div class="container">
+        <p class="section-label">AI Tools</p>
+        <h2>AI tools I'm exploring</h2>
+        <p class="section-intro">
+          I'm exploring AI tools that support web and UI design. I use them to learn and practise,
+          and I'm keen to build these skills further.
+        </p>
+
+        <div class="grid grid-2">
+          <div class="card tool-card">
+            <div class="tool-icon">✦</div>
+            <h3>Google Stitch</h3>
+            <p>
+              An AI tool for generating UI designs from text descriptions. I'm learning to use it
+              to explore layout ideas and practise turning requirements into interface designs.
+            </p>
+          </div>
+
+          <div class="card tool-card">
+            <div class="tool-icon">✳</div>
+            <h3>Claude</h3>
+            <p>
+              An AI assistant I use while learning and practising: planning page structure,
+              understanding HTML/CSS concepts and reviewing my code.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 6. PROJECTS (from resume) ========== -->
+    <section id="projects" class="section section-alt">
+      <div class="container">
+        <p class="section-label">Projects</p>
+        <h2>Projects</h2>
+
+        <article class="card project-card">
+          <div class="project-thumb">
+            <img src="assets/nlp-translator/home.png" alt="Home page of the NLP translation system">
+          </div>
+          <div class="project-body">
+            <p class="project-tag">College Project · April 2025 – July 2025</p>
+            <h3>NLP-Powered Language Translation System</h3>
+
+            <dl class="project-details">
+              <dt>Description</dt>
+              <dd>A natural language translation system for announcements and information sharing.</dd>
+
+              <dt>My contribution</dt>
+              <dd>
+                Developed the translation engine and designed a user-friendly front-end, with a focus
+                on simple navigation and smooth interaction for users and administrators.
+              </dd>
+
+              <dt>Technologies</dt>
+              <dd>
+                <ul class="tags small">
+                  <li>HTML</li><li>CSS</li><li>JavaScript</li><li>NLP</li>
+                  <li>Python</li><li>Flask</li><li>MySQL</li><li>gTTS</li>
+                </ul>
+              </dd>
+            </dl>
+
+            <div class="project-links">
+              <a href="projects/nlp-translator/code.html">View Frontend &amp; Backend Code &rarr;</a>
+              <a href="projects/nlp-translator/nlp-translator-code.zip" download>Download Code (.zip)</a>
+              <!-- Replace this placeholder with your real GitHub repository link -->
+              <a href="#">[ADD GITHUB LINK]</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Real output from running the project -->
+        <h3 class="sub-heading">Project Output</h3>
+
+        <div class="grid grid-2 screenshots">
+          <figure class="card shot">
+            <img src="assets/nlp-translator/home.png" alt="Home page" loading="lazy">
+            <figcaption>Home page</figcaption>
+          </figure>
+          <figure class="card shot">
+            <img src="assets/nlp-translator/registration.png" alt="Registration page" loading="lazy">
+            <figcaption>User registration (passwords stored hashed in MySQL)</figcaption>
+          </figure>
+          <figure class="card shot">
+            <img src="assets/nlp-translator/login.png" alt="Login page" loading="lazy">
+            <figcaption>User login</figcaption>
+          </figure>
+          <figure class="card shot">
+            <img src="assets/nlp-translator/prediction.png" alt="Translation page" loading="lazy">
+            <figcaption>Translation page: choose spoken and target language</figcaption>
+          </figure>
+        </div>
+
+        <h3 class="sub-heading">Sample Translations</h3>
+        <p class="section-intro">
+          Speech is converted to text, translated, and spoken back as audio. Press play to hear the output.
+        </p>
+
+        <div class="grid grid-2 outputs">
+          <div class="card output-card">
+            <p class="output-lang">Hindi (spoken) &rarr; English</p>
+            <p class="output-in">"gadi kramank 1 2 3 4 apni nirdharit Samay se 30 minut deri se chal rahi hai"</p>
+            <p class="output-out">Train number 1 2 3 4 is running 30 minutes late from its scheduled time.</p>
+            <audio controls preload="none" src="assets/nlp-translator/audio/translated_en.mp3"></audio>
+          </div>
+          <div class="card output-card">
+            <p class="output-lang">English &rarr; Hindi</p>
+            <p class="output-in">"Train number 1234 is running 30 minutes late"</p>
+            <p class="output-out" lang="hi">ट्रेन संख्या 1234 30 मिनट देरी से चल रही है</p>
+            <audio controls preload="none" src="assets/nlp-translator/audio/translated_hi.mp3"></audio>
+          </div>
+          <div class="card output-card">
+            <p class="output-lang">English &rarr; Japanese</p>
+            <p class="output-in">"Train number 1234 is running 30 minutes late"</p>
+            <p class="output-out" lang="ja">1234番の列車は30分遅れて運行しています</p>
+            <audio controls preload="none" src="assets/nlp-translator/audio/translated_ja.mp3"></audio>
+          </div>
+          <div class="card output-card">
+            <p class="output-lang">English &rarr; Chinese</p>
+            <p class="output-in">"hey Rakesh how are you"</p>
+            <p class="output-out" lang="zh">嘿拉克什你好吗</p>
+            <audio controls preload="none" src="assets/nlp-translator/audio/translated_zh-cn.mp3"></audio>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 7. DESIGN WORK (placeholder until real designs are ready) ========== -->
+    <section id="design-work" class="section">
+      <div class="container">
+        <p class="section-label">Design Work</p>
+        <div class="card coming-soon">
+          <h2>Design Work: Coming Soon</h2>
+          <p>
+            I'm currently practising UI design with Google Stitch and HTML/CSS.
+            My design work will be added here.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 8. EDUCATION (from resume) ========== -->
+    <section id="education" class="section section-alt">
+      <div class="container">
+        <p class="section-label">Education</p>
+        <h2>Education</h2>
+
+        <div class="timeline">
+          <div class="card timeline-item">
+            <p class="timeline-date">2023 – 2026</p>
+            <h3>B.Sc. Computer Science (Specialisation: AI &amp; Robotics)</h3>
+            <p>Aditya Degree College for Women, Kakinada · CGPA 7.5</p>
+            <p class="muted">Relevant coursework: Operating Systems, DBMS, Data Science, AI, ML</p>
+          </div>
+          <div class="card timeline-item">
+            <p class="timeline-date">Intermediate (XII)</p>
+            <h3>State Board (APBIE)</h3>
+            <p>Vikas Junior College, Jangareddigudem · CGPA 7.3</p>
+          </div>
+          <div class="card timeline-item">
+            <p class="timeline-date">SSC (X)</p>
+            <h3>Secondary School Certificate</h3>
+            <p>Auxilium E.M School, Gavaravaram · CGPA 9.5</p>
+          </div>
+        </div>
+
+        <!-- Internships, workshops and certifications -->
+        <div class="grid grid-2 extra">
+          <div class="card">
+            <h3>Internships &amp; Workshops</h3>
+            <ul class="list">
+              <li>
+                <strong>Power BI Internship – eLearn Academy</strong><br>
+                Assisted in developing interactive Power BI dashboards to visualise business
+                performance metrics. Cleaned and analysed large datasets using Excel and SQL,
+                improving data accuracy by 15%.
+              </li>
+              <li>
+                <strong>Robotic Process Automation Workshop – Automation Anywhere</strong><br>
+                Learned to design and deploy bots for automating repetitive business tasks, with
+                hands-on experience using Automation Anywhere tools.
+              </li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Certifications</h3>
+            <ul class="list">
+              <li>English &amp; Communication Skills – MePro Pearson</li>
+              <li>Power BI – Microsoft</li>
+              <li>Business Writing Techniques – edX</li>
+              <li>Python Essentials</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 9. CONTACT ========== -->
+    <section id="contact" class="section contact">
+      <div class="container contact-box">
+        <p class="section-label">Contact</p>
+        <h2>Let's connect</h2>
+        <p class="section-intro">
+          I'm a fresher looking for my first full-time role as an AI Web Designer / UI Designer.
+          I'd be happy to hear from you.
+        </p>
+        <a href="mailto:Mohinipragada2328@gmail.com" class="btn">Mohinipragada2328@gmail.com</a>
+
+        <ul class="social-links">
+          <li><a href="https://www.linkedin.com/in/mohini-pragada-7b6927298" target="_blank" rel="noopener">LinkedIn</a></li>
+          <li><a href="https://github.com/mohinipragada" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="assets/Mohini-Pragada-Resume.pdf" download>Resume</a></li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========== 10. FOOTER ========== -->
+  <footer class="footer">
+    <div class="container">
+      <p><strong>Build with AI. Design with Purpose.</strong></p>
+      <p class="muted">© 2026 Mohini Pragada · Built with HTML &amp; CSS</p>
+    </div>
+  </footer>
+
+  <!-- Small script for the mobile menu -->
+  <script src="js/script.js"></script>
+</body>
+</html>
