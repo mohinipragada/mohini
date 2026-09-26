@@ -486,6 +486,69 @@ ul, ol {
   object-position: left center;
 }
 
+/* Extra space above a project card that follows another project's content */
+.project-spaced {
+  margin-top: 72px;
+}
+
+/* Tall phone screenshots: show the top of the screen in the thumbnail */
+.project-thumb.thumb-top {
+  max-height: 360px;
+}
+
+.project-thumb.thumb-top img {
+  object-position: center top;
+}
+
+/* Keep button text white inside the project links row */
+.project-links .btn:hover {
+  color: #fff;
+}
+
+/* Project details page: phone screenshots (projects/academic-pulse/) */
+.phone-shots {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 32px;
+  margin-top: 40px;
+}
+
+/* flex-grow matches each image's width/height ratio, so both show at the same height */
+.phone-shot {
+  flex: 671 1 0;
+  max-width: 520px;
+  margin: 0;
+  padding: 14px;
+}
+
+.phone-shot.narrow {
+  flex-grow: 309;
+  max-width: 240px;
+}
+
+.phone-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+.phone-shot figcaption {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: 12px;
+  text-align: center;
+}
+
+.page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 48px;
+}
+
 /* Project output: screenshots */
 .shot {
   padding: 12px;
@@ -746,6 +809,19 @@ ul, ol {
 
   .file-list {
     position: static;
+  }
+
+  /* Stack the phone screenshots one below the other */
+  .phone-shots {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .phone-shot,
+  .phone-shot.narrow {
+    flex: none;
+    width: 100%;
+    max-width: 380px;
   }
 
   /* Mobile menu */
