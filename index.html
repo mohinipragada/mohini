@@ -4,34 +4,39 @@
   <!-- Basic page settings -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Portfolio of Mohini Pragada - B.Sc. Computer Science graduate and aspiring AI Web Designer and UI Designer">
-  <title>Mohini Pragada | Aspiring AI Web Designer</title>
+  <meta name="description" content="Portfolio of Mohini Pragada, AI Web Designer & UI Designer. B.Sc. Computer Science (AI & Robotics) graduate from Kakinada, available immediately.">
+  <meta name="theme-color" content="#0A0A0A">
+  <title>Mohini Pragada | AI Web Designer &amp; UI Designer</title>
 
-  <!-- Google Fonts: Sora for headings, Inter for body text -->
+  <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Our stylesheet -->
-  <link rel="stylesheet" href="css/style.css">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
 
-  <!-- ========== 1. NAVIGATION BAR ========== -->
+  <!-- Skip link: lets keyboard users jump straight to the content -->
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <!-- ========== NAVIGATION (sticky) ========== -->
   <header class="navbar">
     <div class="container nav-content">
       <a href="#home" class="logo">Mohini<span>.</span></a>
 
-      <!-- Hamburger button: only visible on mobile -->
-      <button class="menu-toggle" id="menuToggle" aria-label="Open menu">&#9776;</button>
+      <!-- Menu button: only visible on small screens -->
+      <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks">
+        <span></span><span></span><span></span>
+      </button>
 
-      <nav>
+      <nav aria-label="Main">
         <ul class="nav-links" id="navLinks">
           <li><a href="#about">About</a></li>
           <li><a href="#skills">Skills</a></li>
-          <li><a href="#ai-tools">AI Tools</a></li>
+          <li><a href="#ai-work">AI Work</a></li>
           <li><a href="#projects">Projects</a></li>
-          <li><a href="#web-projects">Web</a></li>
           <li><a href="#education">Education</a></li>
           <li><a href="#contact" class="btn btn-small">Contact</a></li>
         </ul>
@@ -39,90 +44,83 @@
     </div>
   </header>
 
-  <main>
+  <main id="main">
 
-    <!-- ========== 2. HERO SECTION ========== -->
+    <!-- ========== 1. HERO ========== -->
     <section id="home" class="hero">
       <div class="container hero-content">
         <div class="hero-text">
           <p class="badge">🎓 B.Sc. Computer Science Graduate · Fresher</p>
-          <h1>Hi, I'm Mohini Pragada.<br>An aspiring <span class="gradient-text">AI Web Designer &amp; UI Designer.</span></h1>
-          <p class="hero-subtitle">
-            I'm interested in creating clean, responsive and user-friendly web interfaces
-            using HTML, CSS and AI-powered design tools.
+          <h1>Hi, I'm Mohini Pragada.</h1>
+          <p class="hero-role">AI Web Designer &amp; UI Designer</p>
+          <p class="hero-pitch">
+            I design clean, responsive interfaces using HTML, CSS, and AI-powered design tools.
           </p>
-          <div class="hero-buttons">
-            <a href="#projects" class="btn">View My Projects</a>
-            <!-- Put your resume PDF inside the "assets" folder with this exact name -->
-            <a href="assets/Mohini-Pragada-Resume.pdf" class="btn btn-outline" download>Download Resume</a>
+          <div class="button-row">
+            <a href="#ai-work" class="btn">View Work</a>
+            <a href="mailto:Mohinipragada2328@gmail.com" class="btn btn-outline">Hire Me</a>
           </div>
         </div>
 
-        <!-- Profile card with key details from my resume -->
-        <div class="card profile-card">
-          <div class="profile-top">
-            <div class="avatar">MP</div>
-            <div>
-              <h3>Mohini Pragada</h3>
-              <p class="muted">Aspiring AI Web Designer &amp; UI Designer</p>
-            </div>
-          </div>
-
-          <ul class="profile-info">
-            <li><span>Degree</span>B.Sc. Computer Science (AI &amp; Robotics)</li>
-            <li><span>College</span>Aditya Degree College for Women, Kakinada</li>
-            <li><span>Batch</span>2023 – 2026 · CGPA 7.5</li>
-            <li><span>Project</span>NLP-Powered Language Translation System</li>
-          </ul>
-
-          <ul class="tags small">
-            <li>HTML</li>
-            <li>CSS</li>
-            <li>UI/UX Fundamentals</li>
-            <li>Python</li>
-          </ul>
-        </div>
+        <!-- Avatar with initials -->
+        <div class="avatar" aria-hidden="true">MP</div>
       </div>
     </section>
 
-    <!-- ========== 3. ABOUT ME ========== -->
+    <!-- ========== 2. PROCESS STRIP ========== -->
+    <section class="process" aria-labelledby="process-title">
+      <div class="container">
+        <h2 id="process-title" class="section-label">My Process</h2>
+        <ol class="process-steps">
+          <li><span class="step-icon" aria-hidden="true">🔍</span>Understand</li>
+          <li><span class="step-icon" aria-hidden="true">💭</span>Imagine</li>
+          <li class="highlight"><span class="step-icon" aria-hidden="true">✨</span>Prompt AI</li>
+          <li><span class="step-icon" aria-hidden="true">🛠️</span>Create</li>
+          <li><span class="step-icon" aria-hidden="true">🎯</span>Refine</li>
+          <li><span class="step-icon" aria-hidden="true">🚀</span>Deliver</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ========== 3. ABOUT ========== -->
     <section id="about" class="section">
-      <div class="container about-grid">
-        <div>
-          <p class="section-label">About Me</p>
-          <h2>Hello, I'm Mohini</h2>
+      <div class="container">
+        <p class="section-label">About Me</p>
+        <h2>Hello, I'm Mohini</h2>
+        <div class="about-text">
           <p>
-            I'm a <strong>B.Sc. Computer Science graduate</strong> and an aspiring
-            <strong>AI Web Designer &amp; UI Designer</strong>. I'm interested in creating clean,
-            responsive and user-friendly web interfaces using HTML, CSS and AI-powered design tools.
+            I'm a <strong>B.Sc. Computer Science graduate</strong> and <strong>AI Web Designer</strong>.
+            I create clean, responsive, user-friendly web interfaces using HTML, CSS and AI-powered
+            design tools.
           </p>
           <p>
-            As a fresher, I'm building my skills in web design and UI/UX fundamentals, and I'm
-            exploring AI tools like Google Stitch and Claude to learn how they can support the
-            design process. I enjoy learning new things, I value feedback, and I'm looking for an
-            opportunity to grow as a web designer.
+            As a fresher, I'm building my skills in web design and UI/UX fundamentals, and I actively
+            use AI tools like Google Stitch and Claude to support my design process. I value feedback
+            and I'm looking for an opportunity to grow as a web designer.
           </p>
         </div>
 
-        <!-- Quick fact cards -->
-        <div class="fact-list">
-          <div class="card fact">
-            <span class="fact-icon">🎓</span>
-            <div><h3>Education</h3><p>B.Sc. Computer Science (AI &amp; Robotics), 2023 – 2026</p></div>
+        <div class="grid grid-3">
+          <div class="card info-card">
+            <span class="info-icon" aria-hidden="true">🎓</span>
+            <h3>Education</h3>
+            <p>B.Sc. Computer Science (AI &amp; Robotics), 2023–2026</p>
           </div>
-          <div class="card fact">
-            <span class="fact-icon">💡</span>
-            <div><h3>Interest</h3><p>Web design, UI/UX, AI-powered design</p></div>
+          <div class="card info-card">
+            <span class="info-icon" aria-hidden="true">💡</span>
+            <h3>Interest</h3>
+            <p>Web design, UI/UX, AI-powered design</p>
           </div>
-          <div class="card fact">
-            <span class="fact-icon">✅</span>
-            <div><h3>Status</h3><p>Fresher, available for full-time roles</p></div>
+          <div class="card info-card">
+            <span class="info-icon" aria-hidden="true">✅</span>
+            <h3>Status</h3>
+            <p>Fresher, available for full-time roles</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ========== 4. SKILLS (from resume) ========== -->
+    <!-- ========== 4. SKILLS ========== -->
     <section id="skills" class="section section-alt">
       <div class="container">
         <p class="section-label">Skills</p>
@@ -130,43 +128,33 @@
 
         <div class="grid grid-3">
           <div class="card">
-            <h3>🌐 Web Technologies</h3>
+            <h3><span aria-hidden="true">🌐</span> Web Technologies</h3>
             <ul class="tags">
-              <li>HTML</li>
-              <li>CSS</li>
+              <li>HTML</li><li>CSS</li><li>JavaScript</li><li>Responsive Design</li>
             </ul>
           </div>
-
           <div class="card">
-            <h3>🎨 AI &amp; Design</h3>
+            <h3><span aria-hidden="true">🎨</span> AI &amp; Design</h3>
             <ul class="tags">
-              <li>Artificial Intelligence</li>
-              <li>UI/UX Fundamentals</li>
+              <li>Google Stitch</li><li>Claude Design</li><li>Figma</li><li>UI/UX</li>
             </ul>
           </div>
-
           <div class="card">
-            <h3>💻 Programming</h3>
+            <h3><span aria-hidden="true">💻</span> Programming</h3>
             <ul class="tags">
-              <li>Python</li>
+              <li>Python</li><li>Java</li><li>C</li>
             </ul>
           </div>
-
           <div class="card">
-            <h3>🗄️ Data &amp; Database</h3>
+            <h3><span aria-hidden="true">🗄️</span> Data &amp; Database</h3>
             <ul class="tags">
-              <li>Pandas</li>
-              <li>NumPy</li>
-              <li>SQL</li>
+              <li>SQL</li><li>MySQL</li><li>Power BI</li>
             </ul>
           </div>
-
           <div class="card">
-            <h3>🛠️ Tools &amp; Platforms</h3>
+            <h3><span aria-hidden="true">🛠️</span> Tools &amp; Platforms</h3>
             <ul class="tags">
-              <li>Excel</li>
-              <li>Jupyter Notebook</li>
-              <li>Visual Studio</li>
+              <li>GitHub</li><li>VS Code</li><li>Netlify</li>
             </ul>
           </div>
         </div>
@@ -177,40 +165,124 @@
     <section id="ai-tools" class="section">
       <div class="container">
         <p class="section-label">AI Tools</p>
-        <h2>AI tools I'm exploring</h2>
-        <p class="section-intro">
-          I'm exploring AI tools that support web and UI design. I use them to learn and practise,
-          and I'm keen to build these skills further.
-        </p>
+        <h2>AI tools I use</h2>
 
         <div class="grid grid-2">
           <div class="card tool-card">
-            <div class="tool-icon">✦</div>
+            <div class="tool-icon" aria-hidden="true">✦</div>
             <h3>Google Stitch</h3>
             <p>
-              An AI tool for generating UI designs from text descriptions. I'm learning to use it
-              to explore layout ideas and practise turning requirements into interface designs.
+              I use Google Stitch to go from idea to visual prototype fast. I describe the screen in
+              plain language and refine the output conversationally.
             </p>
+            <p class="pill">Used in 3 portfolio designs</p>
           </div>
-
           <div class="card tool-card">
-            <div class="tool-icon">✳</div>
-            <h3>Claude</h3>
+            <div class="tool-icon" aria-hidden="true">✳</div>
+            <h3>Claude Design</h3>
             <p>
-              An AI assistant I use while learning and practising: planning page structure,
-              understanding HTML/CSS concepts and reviewing my code.
+              I use Claude to generate code-ready prototypes, plan page structure, and review my
+              HTML/CSS.
             </p>
+            <p class="pill">Used in 2 portfolio designs</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ========== 6. PROJECTS (from resume) ========== -->
-    <section id="projects" class="section section-alt">
+    <!-- ========== 6. AI DESIGN WORK ========== -->
+    <section id="ai-work" class="section section-alt">
+      <div class="container">
+        <p class="section-label">AI Design Work</p>
+        <h2>AI Design Work</h2>
+        <p class="section-intro">Designs created using AI tools — with the exact prompts I used.</p>
+
+        <div class="grid grid-3">
+
+          <!-- Design 1 -->
+          <article class="card work-card">
+            <!-- Replace assets/ai-work/dashboard.png with your real screenshot -->
+            <figure class="work-shot">
+              <img src="assets/ai-work/dashboard.png" alt="Pulse Analytics dashboard on mobile with revenue, users, conversion and order value stat cards, a revenue trend line chart and recent transactions" loading="lazy">
+              <figcaption class="shot-placeholder">Screenshot: dashboard.png</figcaption>
+            </figure>
+            <div class="work-body">
+              <p class="tool-badge">Made with Google Stitch</p>
+              <h3>SaaS Analytics Dashboard</h3>
+
+              <div class="prompt-box">
+                <div class="prompt-head">
+                  <p class="prompt-label">Prompt used</p>
+                  <button class="copy-btn" type="button">Copy</button>
+                </div>
+                <p class="prompt-text">A clean SaaS analytics dashboard with a left sidebar, top bar, 4 stat cards, a line chart, and a recent activity table. Light mode, indigo accent (#4F46E5), Inter font.</p>
+              </div>
+
+              <p class="refined"><strong>What I refined:</strong> Made stat numbers bolder, changed accent to #6366F1, added the Export button, and refined the revenue trend chart layout.</p>
+            </div>
+          </article>
+
+          <!-- Design 2 -->
+          <article class="card work-card">
+            <!-- Replace assets/ai-work/mobile-screen.png with your real screenshot -->
+            <figure class="work-shot">
+              <img src="assets/ai-work/mobile-screen.png" alt="PulseFit fitness app mobile screen in dark mode with a green daily steps progress ring, active burn and distance cards, an hourly cadence bar chart, heart rate vitals and bottom navigation" loading="lazy">
+              <figcaption class="shot-placeholder">Screenshot: mobile-screen.png</figcaption>
+            </figure>
+            <div class="work-body">
+              <p class="tool-badge">Made with Google Stitch</p>
+              <h3>PulseFit Mobile Screen</h3>
+
+              <div class="prompt-box">
+                <div class="prompt-head">
+                  <p class="prompt-label">Prompt used</p>
+                  <button class="copy-btn" type="button">Copy</button>
+                </div>
+                <p class="prompt-text">A mobile screen for a fitness tracking app. Sticky header, large step count, circular progress ring, 2 stat cards, bottom navigation. Dark mode, green accent (#10B981), Inter font.</p>
+              </div>
+
+              <p class="refined"><strong>What I refined:</strong> Added bottom nav labels (Today, Workouts, Analytics, Profile), increased the progress ring size, added an hourly cadence chart, and refined the vitals card layout.</p>
+            </div>
+          </article>
+
+          <!-- Design 3 -->
+          <article class="card work-card">
+            <!-- Replace assets/ai-work/landing-page.png with your real screenshot -->
+            <figure class="work-shot">
+              <img src="assets/ai-work/landing-page.png" alt="StudyAI landing page in light mode with a purple 'Study Smarter with AI' headline, Start Free button and a preview of today's AI study plan" loading="lazy">
+              <figcaption class="shot-placeholder">Screenshot: landing-page.png</figcaption>
+            </figure>
+            <div class="work-body">
+              <p class="tool-badge">Made with Claude</p>
+              <h3>StudyAI Landing Page</h3>
+
+              <div class="prompt-box">
+                <div class="prompt-head">
+                  <p class="prompt-label">Prompt used</p>
+                  <button class="copy-btn" type="button">Copy</button>
+                </div>
+                <p class="prompt-text">Design a modern landing page for an AI study planner app. Hero with CTA, 3 feature cards, 2 testimonials, footer. Purple accent (#8B5CF6), Inter font.</p>
+              </div>
+
+              <p class="refined"><strong>What I refined:</strong> Added more whitespace in hero section.</p>
+              <a href="projects/studyai/index.html" class="text-link" target="_blank" rel="noopener">Live Demo &rarr;</a>
+            </div>
+          </article>
+
+        </div>
+
+        <!-- Screen readers announce "Copied" after a copy button is pressed -->
+        <p class="visually-hidden" id="copyStatus" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <!-- ========== 7. PROJECTS ========== -->
+    <section id="projects" class="section">
       <div class="container">
         <p class="section-label">Projects</p>
         <h2>Projects</h2>
 
+        <!-- Project 1: NLP Translation -->
         <article class="card project-card">
           <div class="project-thumb">
             <img src="assets/nlp-translator/home.png" alt="Home page of the NLP translation system">
@@ -218,38 +290,37 @@
           <div class="project-body">
             <p class="project-tag">College Project · April 2025 – July 2025</p>
             <h3>NLP-Powered Language Translation System</h3>
+            <ul class="badge-row">
+              <li class="tool-badge">Built with HTML/CSS</li>
+            </ul>
 
             <dl class="project-details">
               <dt>Description</dt>
               <dd>A natural language translation system for announcements and information sharing.</dd>
 
               <dt>My contribution</dt>
-              <dd>
-                Developed the translation engine and designed a user-friendly front-end, with a focus
-                on simple navigation and smooth interaction for users and administrators.
-              </dd>
+              <dd>Developed the translation engine and designed a user-friendly front-end, with a focus on simple navigation.</dd>
 
               <dt>Technologies</dt>
               <dd>
-                <ul class="tags small">
-                  <li>HTML</li><li>CSS</li><li>JavaScript</li><li>NLP</li>
-                  <li>Python</li><li>Flask</li><li>MySQL</li><li>gTTS</li>
+                <ul class="tags">
+                  <li>Python</li><li>NLP</li><li>HTML</li><li>CSS</li><li>JavaScript</li>
                 </ul>
               </dd>
             </dl>
 
-            <div class="project-links">
-              <a href="projects/nlp-translator/code.html">View Frontend &amp; Backend Code &rarr;</a>
-              <a href="projects/nlp-translator/nlp-translator-code.zip" download>Download Code (.zip)</a>
-              <a href="https://github.com/mohinipragada/mohini/tree/main/nlp-translation-project" target="_blank" rel="noopener">View on GitHub &rarr;</a>
+            <div class="button-row">
+              <a href="https://github.com/mohinipragada/mohini/tree/main/nlp-translation-project" class="btn" target="_blank" rel="noopener">GitHub Repo</a>
+              <!-- Placeholder: this is a Flask + MySQL app, so it needs a Python host (not a static host) -->
+              <span class="btn btn-disabled" aria-disabled="true">Live Demo · Coming soon</span>
+              <a href="projects/nlp-translator/code.html" class="text-link">View Code &rarr;</a>
             </div>
           </div>
         </article>
 
         <!-- Real output from running the project -->
         <h3 class="sub-heading">Project Output</h3>
-
-        <div class="grid grid-2 screenshots">
+        <div class="grid grid-2">
           <figure class="card shot">
             <img src="assets/nlp-translator/home.png" alt="Home page" loading="lazy">
             <figcaption>Home page</figcaption>
@@ -272,8 +343,7 @@
         <p class="section-intro">
           Speech is converted to text, translated, and spoken back as audio. Press play to hear the output.
         </p>
-
-        <div class="grid grid-2 outputs">
+        <div class="grid grid-2">
           <div class="card output-card">
             <p class="output-lang">Hindi (spoken) &rarr; English</p>
             <p class="output-in">"gadi kramank 1 2 3 4 apni nirdharit Samay se 30 minut deri se chal rahi hai"</p>
@@ -299,100 +369,122 @@
             <audio controls preload="none" src="assets/nlp-translator/audio/translated_zh-cn.mp3"></audio>
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- ========== 7. WEB PROJECTS (websites built with HTML/CSS/JavaScript) ========== -->
-    <section id="web-projects" class="section">
-      <div class="container">
-        <p class="section-label">Web</p>
-        <h2>Web Projects</h2>
-        <p class="section-intro">Websites I have designed and built using HTML, CSS and JavaScript.</p>
-
-        <article class="card project-card">
+        <!-- Project 2: CampusPortal -->
+        <article class="card project-card project-spaced">
           <div class="project-thumb thumb-top">
-            <img src="assets/student-dashboard/home.png" alt="Student dashboard on mobile showing attendance, pending assignments, courses, GPA and today's schedule">
+            <img src="assets/student-dashboard/home.png" alt="EduPulse student dashboard on mobile showing attendance, pending assignments, courses, GPA and today's schedule">
           </div>
           <div class="project-body">
             <p class="project-tag">Web Design Project</p>
-            <h3>CampusPortal: Student Dashboard</h3>
+            <h3>CampusPortal: Student Dashboard (EduPulse)</h3>
+            <ul class="badge-row">
+              <li class="tool-badge">Built with HTML/CSS</li>
+              <li class="tool-badge">Made with Google Stitch</li>
+              <li class="tool-badge">Made with Claude</li>
+            </ul>
 
             <dl class="project-details">
               <dt>Description</dt>
-              <dd>
-                A responsive academic dashboard where students can see attendance, pending
-                assignments, courses, CGPA and the day's class schedule in one place.
-              </dd>
+              <dd>A responsive academic dashboard where students can see attendance, pending assignments, courses, CGPA and the day's class schedule in one place.</dd>
 
               <dt>Features</dt>
-              <dd>
-                Summary stat cards, today's schedule with live class status, subject-wise attendance
-                bars, assignment tracker with a quick-submit form, and announcements.
-              </dd>
+              <dd>Summary stat cards, today's schedule, attendance bars, assignment tracker, announcements.</dd>
 
               <dt>Technologies</dt>
               <dd>
-                <ul class="tags small">
-                  <li>HTML</li><li>CSS</li><li>JavaScript</li><li>Google Stitch</li>
+                <ul class="tags">
+                  <li>HTML</li><li>CSS</li><li>JavaScript</li>
                 </ul>
               </dd>
             </dl>
 
-            <div class="project-links">
-              <a href="projects/student-dashboard/" target="_blank" rel="noopener">Live Demo &rarr;</a>
-              <a href="https://github.com/mohinipragada/mohini/tree/main/projects/student-dashboard" target="_blank" rel="noopener">View Code on GitHub &rarr;</a>
+            <div class="button-row">
+              <a href="https://github.com/mohinipragada/mohini/tree/main/projects/student-dashboard" class="btn" target="_blank" rel="noopener">GitHub Repo</a>
+              <a href="https://mohinipragada.github.io/mohini/projects/student-dashboard/" class="btn btn-outline" target="_blank" rel="noopener">Live Demo</a>
             </div>
           </div>
         </article>
+
+        <!-- CampusPortal case study: Problem → User → Process → Solution → Result -->
+        <div class="case-study">
+          <h3 class="sub-heading">CampusPortal Case Study</h3>
+          <ol class="case-steps">
+            <li class="card">
+              <span>Problem</span>
+              <p>Students check attendance, assignments, grades and timetables in different places, so it is easy to miss a deadline or fall below the attendance limit.</p>
+            </li>
+            <li class="card">
+              <span>User</span>
+              <p>A college student who checks their phone between classes and needs today's information in a few seconds.</p>
+            </li>
+            <li class="card">
+              <span>Process</span>
+              <p>I listed what a student looks at every day, generated layout ideas in Google Stitch, then built and refined the page in HTML and CSS with help from Claude.</p>
+            </li>
+            <li class="card">
+              <span>Solution</span>
+              <p>A mobile-first dashboard with summary cards, today's schedule with live class status, subject-wise attendance bars, an assignment tracker and announcements.</p>
+            </li>
+            <li class="card">
+              <span>Result</span>
+              <p>Everything a student needs for the day is on one screen, with urgent items like pending assignments and low attendance clearly highlighted.</p>
+            </li>
+          </ol>
+        </div>
       </div>
     </section>
 
-    <!-- ========== 8. EDUCATION (from resume) ========== -->
+    <!-- ========== 8. EDUCATION ========== -->
     <section id="education" class="section section-alt">
       <div class="container">
         <p class="section-label">Education</p>
         <h2>Education</h2>
 
-        <div class="timeline">
-          <div class="card timeline-item">
+        <ol class="timeline">
+          <li class="card timeline-item">
             <p class="timeline-date">2023 – 2026</p>
-            <h3>B.Sc. Computer Science (Specialisation: AI &amp; Robotics)</h3>
+            <h3>B.Sc. Computer Science (AI &amp; Robotics)</h3>
             <p>Aditya Degree College for Women, Kakinada · CGPA 7.5</p>
-            <p class="muted">Relevant coursework: Operating Systems, DBMS, Data Science, AI, ML</p>
-          </div>
-          <div class="card timeline-item">
+            <p class="muted">Coursework: OS, DBMS, Data Science, AI, ML</p>
+          </li>
+          <li class="card timeline-item">
             <p class="timeline-date">Intermediate (XII)</p>
             <h3>State Board (APBIE)</h3>
             <p>Vikas Junior College, Jangareddigudem · CGPA 7.3</p>
-          </div>
-          <div class="card timeline-item">
+          </li>
+          <li class="card timeline-item">
             <p class="timeline-date">SSC (X)</p>
             <h3>Secondary School Certificate</h3>
             <p>Auxilium E.M School, Gavaravaram · CGPA 9.5</p>
-          </div>
-        </div>
+          </li>
+        </ol>
+      </div>
+    </section>
 
-        <!-- Internships, workshops and certifications -->
-        <div class="grid grid-2 extra">
-          <div class="card">
-            <h3>Internships &amp; Workshops</h3>
-            <ul class="list">
-              <li>
-                <strong>Power BI Internship – eLearn Academy</strong><br>
-                Assisted in developing interactive Power BI dashboards to visualise business
-                performance metrics. Cleaned and analysed large datasets using Excel and SQL,
-                improving data accuracy by 15%.
-              </li>
-              <li>
-                <strong>Robotic Process Automation Workshop – Automation Anywhere</strong><br>
-                Learned to design and deploy bots for automating repetitive business tasks, with
-                hands-on experience using Automation Anywhere tools.
-              </li>
-            </ul>
+    <!-- ========== 9. INTERNSHIPS & CERTIFICATIONS ========== -->
+    <section id="experience" class="section">
+      <div class="container">
+        <div class="grid grid-2">
+          <div>
+            <p class="section-label">Experience</p>
+            <h2>Internships &amp; Workshops</h2>
+            <div class="stack">
+              <div class="card">
+                <h3>Power BI Internship – eLearn Academy</h3>
+                <p class="muted">Assisted in developing interactive Power BI dashboards. Cleaned and analysed large datasets using Excel and SQL, improving data accuracy by 15%.</p>
+              </div>
+              <div class="card">
+                <h3>Robotic Process Automation Workshop – Automation Anywhere</h3>
+                <p class="muted">Learned to design and deploy bots for automating repetitive business tasks.</p>
+              </div>
+            </div>
           </div>
-          <div class="card">
-            <h3>Certifications</h3>
-            <ul class="list">
+
+          <div>
+            <p class="section-label">Certificates</p>
+            <h2>Certifications</h2>
+            <ul class="card cert-list">
               <li>English &amp; Communication Skills – MePro Pearson</li>
               <li>Power BI – Microsoft</li>
               <li>Business Writing Techniques – edX</li>
@@ -403,36 +495,52 @@
       </div>
     </section>
 
-    <!-- ========== 9. CONTACT ========== -->
-    <section id="contact" class="section contact">
-      <div class="container contact-box">
+    <!-- ========== 10. CONTACT ========== -->
+    <section id="contact" class="section section-alt contact">
+      <div class="container">
         <p class="section-label">Contact</p>
         <h2>Let's connect</h2>
         <p class="section-intro">
           I'm a fresher looking for my first full-time role as an AI Web Designer / UI Designer.
           I'd be happy to hear from you.
         </p>
-        <a href="mailto:Mohinipragada2328@gmail.com" class="btn">Mohinipragada2328@gmail.com</a>
 
-        <ul class="social-links">
-          <li><a href="https://www.linkedin.com/in/mohini-pragada-7b6927298" target="_blank" rel="noopener">LinkedIn</a></li>
-          <li><a href="https://github.com/mohinipragada" target="_blank" rel="noopener">GitHub</a></li>
-          <li><a href="assets/Mohini-Pragada-Resume.pdf" download>Resume</a></li>
+        <ul class="contact-list">
+          <li class="card">
+            <span aria-hidden="true">📧</span>
+            <div><p class="contact-label">Email</p><a href="mailto:Mohinipragada2328@gmail.com">Mohinipragada2328@gmail.com</a></div>
+          </li>
+          <li class="card">
+            <span aria-hidden="true">📱</span>
+            <div><p class="contact-label">Phone</p><a href="tel:+917671031279">+91-7671031279</a></div>
+          </li>
+          <li class="card">
+            <span aria-hidden="true">📍</span>
+            <div><p class="contact-label">Location</p><p>Kakinada, Andhra Pradesh</p></div>
+          </li>
+          <li class="card">
+            <span aria-hidden="true">💼</span>
+            <div><p class="contact-label">LinkedIn</p><a href="https://www.linkedin.com/in/mohini-pragada-7b6927298" target="_blank" rel="noopener">mohini-pragada</a></div>
+          </li>
+          <li class="card">
+            <span aria-hidden="true">🐙</span>
+            <div><p class="contact-label">GitHub</p><a href="https://github.com/mohinipragada" target="_blank" rel="noopener">github.com/mohinipragada</a></div>
+          </li>
         </ul>
+
+        <a href="mailto:Mohinipragada2328@gmail.com" class="btn btn-large">Hire Me &rarr;</a>
       </div>
     </section>
 
   </main>
 
-  <!-- ========== 10. FOOTER ========== -->
+  <!-- ========== FOOTER ========== -->
   <footer class="footer">
     <div class="container">
-      <p><strong>Build with AI. Design with Purpose.</strong></p>
-      <p class="muted">© 2026 Mohini Pragada · Built with HTML &amp; CSS</p>
+      <p>© 2026 Mohini Pragada · Designed &amp; built with AI tools</p>
     </div>
   </footer>
 
-  <!-- Small script for the mobile menu -->
-  <script src="js/script.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>

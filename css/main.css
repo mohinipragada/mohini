@@ -1,0 +1,1077 @@
+/* =========================================================
+   Mohini Pragada · Portfolio
+   Mobile-first: base styles are for phones (375px),
+   then media queries add layout for 768px and 1024px+.
+   ========================================================= */
+
+/* =========================================================
+   1. DESIGN TOKENS
+   ========================================================= */
+:root {
+  --bg: #0A0A0A;            /* page background */
+  --bg-alt: #0F0F0F;        /* alternate section background */
+  --card: #141414;          /* card background */
+  --border: #262626;        /* card borders */
+  --accent: #10B981;        /* emerald green */
+  --accent-soft: rgba(16, 185, 129, 0.12);
+  --accent-line: rgba(16, 185, 129, 0.35);
+  --text: #FFFFFF;          /* main text */
+  --muted: #A3A3A3;         /* secondary text */
+
+  --radius: 16px;           /* cards */
+  --radius-btn: 12px;       /* buttons */
+  --space: 24px;            /* base spacing unit */
+  --section-gap: 64px;      /* space between sections */
+  --max-width: 1120px;
+}
+
+/* =========================================================
+   2. RESET & BASE
+   ========================================================= */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;   /* keeps headings visible below the sticky nav */
+}
+
+body {
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+/* Visible focus ring for keyboard users */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: -60px;
+  z-index: 100;
+  padding: 10px 16px;
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 600;
+  border-radius: var(--radius-btn);
+}
+
+.skip-link:focus {
+  top: 12px;
+}
+
+/* =========================================================
+   3. BUTTONS, CARDS, TAGS
+   ========================================================= */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-btn);
+  background-color: var(--accent);
+  color: var(--bg);              /* dark text on green for contrast */
+  font-weight: 600;
+  transition: transform 0.2s, background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  background-color: #34D399;
+  border-color: #34D399;
+}
+
+.btn-outline {
+  background-color: transparent;
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.btn-outline:hover {
+  background-color: transparent;
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn-small {
+  padding: 8px 16px;
+  font-size: 0.9rem;
+}
+
+.btn-large {
+  padding: 16px 40px;
+  font-size: 1.1rem;
+}
+
+/* Placeholder button for links that are not ready yet */
+.btn-disabled,
+.btn-disabled:hover {
+  background-color: transparent;
+  border: 1px dashed var(--border);
+  color: var(--muted);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.text-link {
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.text-link:hover {
+  text-decoration: underline;
+}
+
+.card {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space);
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent-line);
+}
+
+.card h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+/* Skill / technology pills */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tags li {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background-color: #1C1C1C;
+  border: 1px solid var(--border);
+  color: #E5E5E5;
+  font-size: 0.85rem;
+}
+
+/* Green pill: "Used in 3 portfolio designs" */
+.pill {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background-color: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Tool badges: "Made with Google Stitch" */
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tool-badge {
+  display: inline-block;
+  width: fit-content;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--accent-line);
+  background-color: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Grid layouts (one column on phones) */
+.grid {
+  display: grid;
+  gap: var(--space);
+}
+
+/* =========================================================
+   4. NAVIGATION
+   ========================================================= */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background-color: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 68px;
+}
+
+.logo {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.logo span {
+  color: var(--accent);
+}
+
+/* Hamburger button (three lines) */
+.menu-toggle {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+}
+
+.menu-toggle span {
+  display: block;
+  height: 2px;
+  background-color: var(--text);
+  border-radius: 2px;
+}
+
+/* Mobile menu: hidden until JavaScript adds "open" */
+.nav-links {
+  display: none;
+  position: absolute;
+  top: 68px;
+  left: 0;
+  right: 0;
+  flex-direction: column;
+  gap: 20px;
+  padding: var(--space) 16px;
+  background-color: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-links.open {
+  display: flex;
+}
+
+.nav-links a:not(.btn) {
+  color: var(--muted);
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.nav-links a:not(.btn):hover {
+  color: var(--text);
+}
+
+/* =========================================================
+   5. SECTIONS
+   ========================================================= */
+.section {
+  padding: var(--section-gap) 0;
+}
+
+.section-alt {
+  background-color: var(--bg-alt);
+  border-top: 1px solid #171717;
+  border-bottom: 1px solid #171717;
+}
+
+.section-label {
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.section h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-bottom: var(--space);
+}
+
+.section-intro {
+  color: var(--muted);
+  max-width: 600px;
+  margin-top: -8px;
+  margin-bottom: 40px;
+}
+
+.sub-heading {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 48px 0 var(--space);
+}
+
+/* =========================================================
+   6. HERO
+   ========================================================= */
+.hero {
+  padding: 56px 0 var(--section-gap);
+}
+
+.hero-content {
+  display: flex;
+  flex-direction: column-reverse;   /* avatar on top on phones */
+  gap: 32px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 6px 14px;
+  margin-bottom: var(--space);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background-color: var(--card);
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.hero h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.hero-role {
+  margin-top: 8px;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.hero-pitch {
+  max-width: 520px;
+  margin: 16px 0 32px;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #1F2F28, var(--card));
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 60px rgba(16, 185, 129, 0.2);
+  color: var(--accent);
+  font-size: 2.4rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+/* =========================================================
+   7. PROCESS STRIP
+   ========================================================= */
+.process {
+  padding-bottom: var(--section-gap);
+}
+
+.process .section-label {
+  margin-bottom: 16px;
+}
+
+/* Phones: 2 columns, no arrows */
+.process-steps {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.process-steps li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-btn);
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.process-steps li:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-line);
+}
+
+/* "Prompt AI" step gets the green accent */
+.process-steps li.highlight {
+  border-color: var(--accent);
+  background-color: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.step-icon {
+  font-size: 1.1rem;
+}
+
+/* =========================================================
+   8. ABOUT
+   ========================================================= */
+.about-text {
+  max-width: 720px;
+  margin-bottom: 40px;
+}
+
+.about-text p {
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+.about-text strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.info-icon {
+  display: block;
+  font-size: 1.6rem;
+  margin-bottom: 12px;
+}
+
+.info-card h3 {
+  margin-bottom: 4px;
+}
+
+.info-card p {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* =========================================================
+   9. AI TOOLS
+   ========================================================= */
+.tool-card {
+  padding: 32px;
+}
+
+.tool-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 20px;
+  border-radius: var(--radius-btn);
+  background-color: var(--accent-soft);
+  color: var(--accent);
+  font-size: 1.4rem;
+}
+
+.tool-card h3 {
+  font-size: 1.25rem;
+}
+
+.tool-card p:not(.pill) {
+  color: var(--muted);
+}
+
+/* =========================================================
+   10. AI DESIGN WORK
+   ========================================================= */
+.work-card {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Screenshot area; the placeholder shows until a real image loads */
+.work-shot {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background:
+    repeating-linear-gradient(45deg, #161616 0 12px, #121212 12px 24px);
+  border-bottom: 1px solid var(--border);
+}
+
+.work-shot img {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+/* JavaScript adds "missing" when the image file does not exist yet */
+.work-shot.missing img {
+  display: none;
+}
+
+.shot-placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.work-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+  padding: var(--space);
+}
+
+.work-body h3 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.prompt-box {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-btn);
+  background-color: #0D0D0D;
+}
+
+.prompt-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.prompt-label {
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.copy-btn {
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background-color: var(--card);
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.copy-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.copy-btn.copied {
+  border-color: var(--accent);
+  background-color: var(--accent-soft);
+  color: var(--accent);
+}
+
+.prompt-text {
+  color: #D4D4D4;
+  font-size: 0.9rem;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  line-height: 1.6;
+}
+
+.refined {
+  margin-top: auto;   /* keeps this at the bottom so cards line up */
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.refined strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* =========================================================
+   11. PROJECTS
+   ========================================================= */
+.project-card {
+  display: grid;
+  gap: var(--space);
+  padding: 0;
+  overflow: hidden;
+}
+
+.project-card:hover {
+  transform: none;   /* big cards don't lift */
+}
+
+.project-thumb {
+  max-height: 280px;
+  overflow: hidden;
+  background-color: #111;
+  border-bottom: 1px solid var(--border);
+}
+
+.project-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: left top;
+}
+
+.project-thumb.thumb-top img {
+  object-position: center top;
+}
+
+.project-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 var(--space) var(--space);
+}
+
+.project-body h3 {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.project-tag {
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.project-details dt {
+  margin-top: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.project-details dt:first-child {
+  margin-top: 0;
+}
+
+.project-details dd {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.project-spaced {
+  margin-top: 72px;
+}
+
+/* NLP screenshots */
+.shot {
+  padding: 12px;
+}
+
+.shot img {
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.shot figcaption {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* Sample translation cards */
+.output-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.output-lang {
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.output-in {
+  color: var(--muted);
+  font-style: italic;
+  font-size: 0.95rem;
+}
+
+.output-out {
+  font-weight: 500;
+}
+
+.output-card audio {
+  width: 100%;
+  margin-top: 8px;
+}
+
+/* Case study steps */
+.case-steps {
+  display: grid;
+  gap: 16px;
+}
+
+.case-steps .card {
+  padding: 20px;
+}
+
+.case-steps span {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.case-steps p {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* =========================================================
+   12. EDUCATION TIMELINE
+   ========================================================= */
+.timeline {
+  display: grid;
+  gap: 16px;
+  padding-left: 20px;
+  border-left: 2px solid var(--border);
+}
+
+.timeline-item {
+  position: relative;
+}
+
+/* Green dot on the timeline line */
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  left: -30px;
+  top: 28px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--bg-alt);
+}
+
+.timeline-date {
+  color: var(--accent);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.timeline-item h3 {
+  margin-bottom: 4px;
+}
+
+.timeline-item p:not(.timeline-date) {
+  font-size: 0.95rem;
+}
+
+/* =========================================================
+   13. INTERNSHIPS & CERTIFICATIONS
+   ========================================================= */
+.stack {
+  display: grid;
+  gap: 16px;
+}
+
+.cert-list {
+  display: grid;
+  gap: 14px;
+}
+
+.cert-list:hover {
+  transform: none;
+}
+
+.cert-list li {
+  position: relative;
+  padding-left: 28px;
+}
+
+.cert-list li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* =========================================================
+   14. CONTACT & FOOTER
+   ========================================================= */
+.contact .container {
+  text-align: center;
+}
+
+.contact .section-intro {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.contact-list {
+  display: grid;
+  gap: 12px;
+  max-width: 900px;
+  margin: 0 auto 40px;
+  text-align: left;
+}
+
+.contact-list .card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+}
+
+.contact-list span {
+  font-size: 1.4rem;
+}
+
+.contact-label {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.contact-list a {
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.contact-list a:hover {
+  color: var(--accent);
+}
+
+.footer {
+  padding: 32px 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* =========================================================
+   15. TABLETS (768px and up)
+   ========================================================= */
+@media (min-width: 768px) {
+  .container {
+    padding: 0 32px;
+  }
+
+  .grid-2,
+  .grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .section h2 {
+    font-size: 2.2rem;
+  }
+
+  .hero {
+    padding: 96px 0 var(--section-gap);
+  }
+
+  .hero-content {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .hero h1 {
+    font-size: 3rem;
+  }
+
+  .hero-role {
+    font-size: 1.7rem;
+  }
+
+  .avatar {
+    flex-shrink: 0;
+    width: 200px;
+    height: 200px;
+    font-size: 3.6rem;
+  }
+
+  .process-steps {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .contact-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .case-steps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Desktop menu: always visible, in a row */
+  .menu-toggle {
+    display: none;
+  }
+
+  .nav-links {
+    display: flex;
+    position: static;
+    flex-direction: row;
+    align-items: center;
+    gap: 28px;
+    padding: 0;
+    background: none;
+    border: none;
+  }
+}
+
+/* =========================================================
+   16. DESKTOP (1024px and up)
+   ========================================================= */
+@media (min-width: 1024px) {
+  .grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .hero h1 {
+    font-size: 3.6rem;
+  }
+
+  .avatar {
+    width: 260px;
+    height: 260px;
+    font-size: 4.5rem;
+    margin-right: 40px;
+  }
+
+  /* Process: one row with arrows between steps */
+  .process-steps {
+    display: flex;
+    justify-content: space-between;
+    gap: 32px;
+  }
+
+  .process-steps li {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .process-steps li:not(:last-child)::after {
+    content: "→";
+    position: absolute;
+    left: 100%;
+    width: 32px;          /* same as the gap */
+    text-align: center;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* Project cards: image left, details right */
+  .project-card {
+    grid-template-columns: 1fr 1.2fr;
+    gap: 0;
+  }
+
+  .project-thumb {
+    max-height: none;
+    border-bottom: none;
+    border-right: 1px solid var(--border);
+  }
+
+  .project-thumb.thumb-top {
+    max-height: 560px;
+  }
+
+  .project-body {
+    padding: 32px;
+  }
+
+  .case-steps {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .contact-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Respect users who prefer less motion */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  * {
+    transition: none !important;
+  }
+}
