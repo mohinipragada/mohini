@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Interactive demo of Mohini Pragada's NLP-powered language translation system, using real recorded output.">
+  <meta name="theme-color" content="#0A0A0A">
+  <title>NLP Translation Demo | Mohini Pragada</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Same design system as the main portfolio -->
+  <link rel="stylesheet" href="../../css/main.css">
+
+  <style>
+    /* ===== Demo page styles (on top of main.css) ===== */
+    .demo {
+      padding: 48px 0 var(--section-gap);
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 32px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .back-link:hover {
+      color: var(--accent);
+    }
+
+    .demo h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+
+    .demo-intro {
+      max-width: 640px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .demo-note {
+      display: inline-flex;
+      gap: 8px;
+      padding: 8px 14px;
+      margin-bottom: 40px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-btn);
+      background-color: var(--card);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    /* Step 1: pick a language pair */
+    .step-title {
+      margin-bottom: 12px;
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .pairs {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .pair-btn {
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-btn);
+      background-color: var(--card);
+      color: var(--text);
+      font-weight: 500;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 0.2s, background-color 0.2s;
+    }
+
+    .pair-btn:hover {
+      border-color: var(--accent-line);
+    }
+
+    .pair-btn[aria-pressed="true"] {
+      border-color: var(--accent);
+      background-color: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    /* Translator panel */
+    .panel {
+      display: grid;
+      gap: 16px;
+    }
+
+    .panel:hover {
+      transform: none;
+    }
+
+    .io-box {
+      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-btn);
+      background-color: var(--bg);
+    }
+
+    .io-label {
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .io-text {
+      font-size: 1.1rem;
+      font-weight: 500;
+      min-height: 1.6em;
+    }
+
+    #inputText {
+      font-style: italic;
+      color: #D4D4D4;
+    }
+
+    .io-placeholder {
+      color: #525252;
+      font-weight: 400;
+    }
+
+    /* Pipeline progress: Speech → Text → Translate → Speech */
+    .pipeline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pipeline li {
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 500;
+      transition: border-color 0.2s, color 0.2s, background-color 0.2s;
+    }
+
+    .pipeline li.done {
+      border-color: var(--accent-line);
+      background-color: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .pipeline li.active {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .translate-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .translate-row .btn[disabled] {
+      opacity: 0.6;
+      cursor: wait;
+      transform: none;
+    }
+
+    #outputAudio {
+      width: 100%;
+      margin-top: 12px;
+    }
+
+    .io-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (min-width: 768px) {
+      .demo {
+        padding-top: 72px;
+      }
+
+      .demo h1 {
+        font-size: 2.6rem;
+      }
+
+      .pairs {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .io-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="container nav-content">
+      <a href="../../index.html" class="logo">Mohini<span>.</span></a>
+      <a href="../../index.html#projects" class="btn btn-small btn-outline">Back to Projects</a>
+    </div>
+  </header>
+
+  <main class="demo">
+    <div class="container">
+      <a href="../../index.html#projects" class="back-link">&larr; Back to portfolio</a>
+
+      <p class="section-label">Live Demo</p>
+      <h1>NLP-Powered Language Translation</h1>
+      <p class="demo-intro">
+        The system listens to an announcement, converts speech to text, translates it with NLP,
+        and speaks the result back as audio. Pick a language pair and press Translate.
+      </p>
+      <p class="demo-note">
+        <span aria-hidden="true">ℹ️</span>
+        This demo replays real output recorded from the running app (Python, Flask, MySQL).
+      </p>
+
+      <!-- Step 1: choose a language pair -->
+      <p class="step-title" id="pairsLabel">1 · Choose a language pair</p>
+      <div class="pairs" role="group" aria-labelledby="pairsLabel">
+        <button class="pair-btn" type="button" data-sample="0" aria-pressed="true">Hindi &rarr; English</button>
+        <button class="pair-btn" type="button" data-sample="1" aria-pressed="false">English &rarr; Hindi</button>
+        <button class="pair-btn" type="button" data-sample="2" aria-pressed="false">English &rarr; Japanese</button>
+        <button class="pair-btn" type="button" data-sample="3" aria-pressed="false">English &rarr; Chinese</button>
+      </div>
+
+      <!-- Step 2: translate -->
+      <p class="step-title">2 · Translate</p>
+      <div class="card panel">
+        <div class="io-grid">
+          <div class="io-box">
+            <p class="io-label" id="inputLabel">Spoken input (Hindi)</p>
+            <p class="io-text" id="inputText"></p>
+          </div>
+          <div class="io-box">
+            <p class="io-label" id="outputLabel">Translated output (English)</p>
+            <p class="io-text" id="outputText" aria-live="polite"><span class="io-placeholder">Press Translate to see the result</span></p>
+            <audio id="outputAudio" class="hidden" controls preload="none"></audio>
+          </div>
+        </div>
+
+        <ol class="pipeline" id="pipeline" aria-label="Translation steps">
+          <li>🎙️ Speech input</li>
+          <li>📝 Speech to text</li>
+          <li>🌐 NLP translation</li>
+          <li>🔊 Text to speech</li>
+        </ol>
+
+        <div class="translate-row">
+          <button class="btn" type="button" id="translateBtn">Translate &rarr;</button>
+          <a href="https://github.com/mohinipragada/mohini/tree/main/nlp-translation-project" class="text-link" target="_blank" rel="noopener">View source on GitHub &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>© 2026 Mohini Pragada · Designed &amp; built with AI tools</p>
+    </div>
+  </footer>
+
+  <script>
+    // Real samples recorded from the running project
+    const samples = [
+      {
+        from: "Hindi", to: "English", lang: "en",
+        input: "\"gadi kramank 1 2 3 4 apni nirdharit Samay se 30 minut deri se chal rahi hai\"",
+        output: "Train number 1 2 3 4 is running 30 minutes late from its scheduled time.",
+        audio: "../../assets/nlp-translator/audio/translated_en.mp3"
+      },
+      {
+        from: "English", to: "Hindi", lang: "hi",
+        input: "\"Train number 1234 is running 30 minutes late\"",
+        output: "ट्रेन संख्या 1234 30 मिनट देरी से चल रही है",
+        audio: "../../assets/nlp-translator/audio/translated_hi.mp3"
+      },
+      {
+        from: "English", to: "Japanese", lang: "ja",
+        input: "\"Train number 1234 is running 30 minutes late\"",
+        output: "1234番の列車は30分遅れて運行しています",
+        audio: "../../assets/nlp-translator/audio/translated_ja.mp3"
+      },
+      {
+        from: "English", to: "Chinese", lang: "zh",
+        input: "\"hey Rakesh how are you\"",
+        output: "嘿拉克什你好吗",
+        audio: "../../assets/nlp-translator/audio/translated_zh-cn.mp3"
+      }
+    ];
+
+    const pairButtons = document.querySelectorAll(".pair-btn");
+    const inputLabel = document.getElementById("inputLabel");
+    const inputText = document.getElementById("inputText");
+    const outputLabel = document.getElementById("outputLabel");
+    const outputText = document.getElementById("outputText");
+    const outputAudio = document.getElementById("outputAudio");
+    const translateBtn = document.getElementById("translateBtn");
+    const steps = document.querySelectorAll("#pipeline li");
+
+    let current = 0;
+    let timers = [];
+
+    // Show the chosen sample's input and reset the output
+    function selectSample(index) {
+      timers.forEach(clearTimeout);
+      timers = [];
+      current = index;
+      const s = samples[index];
+
+      pairButtons.forEach(function (btn) {
+        btn.setAttribute("aria-pressed", String(Number(btn.dataset.sample) === index));
+      });
+
+      inputLabel.textContent = "Spoken input (" + s.from + ")";
+      inputText.textContent = s.input;
+      outputLabel.textContent = "Translated output (" + s.to + ")";
+      outputText.innerHTML = '<span class="io-placeholder">Press Translate to see the result</span>';
+      outputText.removeAttribute("lang");
+
+      outputAudio.pause();
+      outputAudio.classList.add("hidden");
+      steps.forEach(function (step) { step.className = ""; });
+      translateBtn.disabled = false;
+      translateBtn.innerHTML = "Translate &rarr;";
+    }
+
+    // Walk through the pipeline steps, then reveal the output and play the audio
+    function translate() {
+      const s = samples[current];
+      translateBtn.disabled = true;
+      translateBtn.textContent = "Translating…";
+      outputText.innerHTML = '<span class="io-placeholder">Working…</span>';
+
+      steps.forEach(function (step, i) {
+        timers.push(setTimeout(function () {
+          if (i > 0) steps[i - 1].className = "done";
+          step.className = "active";
+        }, i * 450));
+      });
+
+      timers.push(setTimeout(function () {
+        steps.forEach(function (step) { step.className = "done"; });
+        outputText.textContent = s.output;
+        outputText.setAttribute("lang", s.lang);
+        outputAudio.src = s.audio;
+        outputAudio.classList.remove("hidden");
+        outputAudio.play().catch(function () { /* autoplay blocked: user can press play */ });
+        translateBtn.disabled = false;
+        translateBtn.textContent = "Translate again";
+      }, steps.length * 450));
+    }
+
+    pairButtons.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        selectSample(Number(btn.dataset.sample));
+      });
+    });
+
+    translateBtn.addEventListener("click", translate);
+
+    selectSample(0);
+  </script>
+</body>
+</html>
